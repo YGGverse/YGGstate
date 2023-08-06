@@ -71,6 +71,7 @@ if ($connectedPeers = Yggdrasil::getPeers()) {
 
       $db->beginTransaction();
 
+      // Init peer
       if ($dbPeer = $db->findPeer($connectedPeerAddress)) {
 
         $dbPeerId = $dbPeer->peerId;
@@ -79,49 +80,49 @@ if ($connectedPeers = Yggdrasil::getPeers()) {
 
         $dbPeerId = $db->addPeer($connectedPeerAddress, $connectedPeerInfo->key, time());
 
-        if ($connectedPeerRemoteUrl = URL::parse($connectedPeerInfo->remote)) {
-
-          if ($dbPeerRemote = $db->findPeerRemote($dbPeerId,
-                                                  $connectedPeerRemoteUrl->host->scheme,
-                                                  $connectedPeerRemoteUrl->host->name,
-                                                  $connectedPeerRemoteUrl->host->port)) {
-
-            // Update connection stats
-            if ($dbPeerRemote->received < $connectedPeerInfo->bytes_recvd) {
-
-              $debug['yggdrasil']['peer']['remote']['total']['update'] +=
-              $db->updatePeerRemoteReceived($dbPeerRemote->dbPeerRemoteId, $connectedPeerInfo->bytes_recvd, time());
-
-            }
-
-            if ($dbPeerRemote->sent < $connectedPeerInfo->bytes_sent) {
-
-              $debug['yggdrasil']['peer']['remote']['total']['update'] +=
-              $db->updatePeerRemoteSent($dbPeerRemote->dbPeerRemoteId, $connectedPeerInfo->bytes_sent, time());
-            }
-
-            if ($dbPeerRemote->uptime < $connectedPeerInfo->uptime) {
-
-              $debug['yggdrasil']['peer']['remote']['total']['update'] +=
-              $db->updatePeerRemoteUptime($dbPeerRemote->dbPeerRemoteId, $connectedPeerInfo->uptime, time());
-            }
-
-          } else {
-
-            $peerRemoteId = $db->addPeerRemote($dbPeerId,
-                                               $connectedPeerRemoteUrl->host->scheme,
-                                               $connectedPeerRemoteUrl->host->name,
-                                               $connectedPeerRemoteUrl->host->port,
-                                               $connectedPeerInfo->bytes_recvd,
-                                               $connectedPeerInfo->bytes_sent,
-                                               $connectedPeerInfo->uptime,
-                                               time());
-
-            $debug['yggdrasil']['peer']['remote']['total']['insert']++;
-          }
-        }
-
         $debug['yggdrasil']['peer']['total']['insert']++;
+      }
+
+      // Init peer data
+      if ($connectedPeerRemoteUrl = URL::parse($connectedPeerInfo->remote)) {
+
+        if ($dbPeerRemote = $db->findPeerRemote($dbPeerId,
+                                                $connectedPeerRemoteUrl->host->scheme,
+                                                $connectedPeerRemoteUrl->host->name,
+                                                $connectedPeerRemoteUrl->host->port)) {
+
+          // Update connection stats
+          if ($dbPeerRemote->received < $connectedPeerInfo->bytes_recvd) {
+
+            $debug['yggdrasil']['peer']['remote']['total']['update'] +=
+            $db->updatePeerRemoteReceived($dbPeerRemote->peerRemoteId, $connectedPeerInfo->bytes_recvd, time());
+          }
+
+          if ($dbPeerRemote->sent < $connectedPeerInfo->bytes_sent) {
+
+            $debug['yggdrasil']['peer']['remote']['total']['update'] +=
+            $db->updatePeerRemoteSent($dbPeerRemote->peerRemoteId, $connectedPeerInfo->bytes_sent, time());
+          }
+
+          if ($dbPeerRemote->uptime < $connectedPeerInfo->uptime) {
+
+            $debug['yggdrasil']['peer']['remote']['total']['update'] +=
+            $db->updatePeerRemoteUptime($dbPeerRemote->peerRemoteId, $connectedPeerInfo->uptime, time());
+          }
+
+        } else {
+
+          $peerRemoteId = $db->addPeerRemote($dbPeerId,
+                                             $connectedPeerRemoteUrl->host->scheme,
+                                             $connectedPeerRemoteUrl->host->name,
+                                             $connectedPeerRemoteUrl->host->port,
+                                             $connectedPeerInfo->bytes_recvd,
+                                             $connectedPeerInfo->bytes_sent,
+                                             $connectedPeerInfo->uptime,
+                                             time());
+
+          $debug['yggdrasil']['peer']['remote']['total']['insert']++;
+        }
       }
 
       $debug['yggdrasil']['peer']['total']['online']++;
