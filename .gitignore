@@ -1,0 +1,5 @@
+.vscode
+.ftpignore
+
+/config/app.php
+/database/yggstate.mwb.bak
