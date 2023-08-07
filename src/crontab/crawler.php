@@ -88,9 +88,10 @@ if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
 
       } else {
 
-        $dbPeerId = $db->addPeer($connectedPeerAddress, $connectedPeerInfo->key, time());
+        if ($dbPeerId = $db->addPeer($connectedPeerAddress, $connectedPeerInfo->key, time())) {
 
-        $debug['yggdrasil']['peer']['total']['insert']++;
+          $debug['yggdrasil']['peer']['total']['insert']++;
+        }
       }
 
       // Init peer remote
@@ -122,16 +123,17 @@ if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
 
         } else {
 
-          $peerRemoteId = $db->addPeerRemote($dbPeerId,
-                                             $connectedPeerRemoteUrl->host->scheme,
-                                             $connectedPeerRemoteUrl->host->name,
-                                             $connectedPeerRemoteUrl->host->port,
-                                             $connectedPeerInfo->bytes_recvd,
-                                             $connectedPeerInfo->bytes_sent,
-                                             $connectedPeerInfo->uptime,
-                                             time());
+          if ($peerRemoteId = $db->addPeerRemote($dbPeerId,
+                                                 $connectedPeerRemoteUrl->host->scheme,
+                                                 $connectedPeerRemoteUrl->host->name,
+                                                 $connectedPeerRemoteUrl->host->port,
+                                                 $connectedPeerInfo->bytes_recvd,
+                                                 $connectedPeerInfo->bytes_sent,
+                                                 $connectedPeerInfo->uptime,
+                                                 time())) {
 
-          $debug['yggdrasil']['peer']['remote']['total']['insert']++;
+            $debug['yggdrasil']['peer']['remote']['total']['insert']++;
+          }
         }
 
         // Init peer coordinate
@@ -139,21 +141,31 @@ if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
 
           $peerCoordinateId = $dbPeerCoordinate->peerCoordinateId;
 
+          // Create new peer coordinate on port change
+          if ($dbPeerCoordinate->port !== $connectedPeerInfo->port) {
+
+            if ($peerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time())) {
+
+              $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
+            }
+          }
+
         } else {
 
-          $peerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time());
-          $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
+          if ($peerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time())) {
+
+            $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
+          }
         }
 
-        // Init peer coordinate route
-
+        // Init peer coordinate routing
         $localPeerCoordinateRoute = [];
         foreach ($db->getPeerCoordinateRoute($peerCoordinateId) as $dbPeerCoordinateRoute) {
 
           $localPeerCoordinateRoute[$dbPeerCoordinateRoute->level] = $dbPeerCoordinateRoute->port;
         }
 
-        // Compare remote and local routes to prevent write operations
+        // Compare remote and local routes to prevent extra writing operations
         if ($localPeerCoordinateRoute !== $connectedPeerInfo->coords) {
 
           $debug['yggdrasil']['peer']['coordinate']['route']['total']['delete'] +=
@@ -161,8 +173,10 @@ if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
 
           foreach ($connectedPeerInfo->coords as $level => $port) {
 
-            $debug['yggdrasil']['peer']['coordinate']['route']['total']['insert'] +=
-            $db->addPeerCoordinateRoute($peerCoordinateId, $level, $port);
+            if ($db->addPeerCoordinateRoute($peerCoordinateId, $level, $port)) {
+
+              $debug['yggdrasil']['peer']['coordinate']['route']['total']['insert']++;
+            }
           }
         }
       }
