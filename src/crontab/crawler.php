@@ -18,9 +18,8 @@ if (false === sem_acquire($semaphore, true)) {
 
 // Load system dependencies
 require_once(__DIR__ . '/../config/app.php');
-require_once(__DIR__ . '/../library/yggdrasil.php');
 require_once(__DIR__ . '/../library/mysql.php');
-require_once __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../../vendor/autoload.php';
 
 // Check disk quota
 if (CRAWL_STOP_DISK_QUOTA_MB_LEFT > disk_free_space('/') / 1000000) {
@@ -84,7 +83,7 @@ if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
       }
 
       // Init peer data
-      if ($connectedPeerRemoteUrl = Yggverse\parser\Url::parse($connectedPeerInfo->remote)) {
+      if ($connectedPeerRemoteUrl = Yggverse\Parser\Url::parse($connectedPeerInfo->remote)) {
 
         if ($dbPeerRemote = $db->findPeerRemote($dbPeerId,
                                                 $connectedPeerRemoteUrl->host->scheme,
