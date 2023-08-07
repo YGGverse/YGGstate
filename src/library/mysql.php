@@ -155,6 +155,68 @@ class MySQL {
     return $query->fetch();
   }
 
+  // Peer coordinate
+  // https://github.com/matrix-org/pinecone/wiki/2.-Spanning-Tree#coordinates
+
+  public function addPeerCoordinate(int $peerId, int $port, int $timeAdded) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `peerCoordinate` SET `peerId`    = ?,
+                                                                   `port`      = ?,
+                                                                   `timeAdded` = ?');
+
+    $query->execute([$peerId, $port, $timeAdded]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function addPeerCoordinateRoute(int $peerCoordinateId, int $level, int $port) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `peerCoordinateRoute` SET `peerCoordinateId` = ?,
+                                                                        `level`            = ?,
+                                                                        `port`             = ?');
+
+    $query->execute([$peerCoordinateId, $level, $port]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function flushPeerCoordinateRoute(int $peerCoordinateId) {
+
+    $this->_debug->query->delete->total++;
+
+    $query = $this->_db->prepare('DELETE FROM `peerCoordinateRoute` WHERE `peerCoordinateId` = ?');
+
+    $query->execute([$peerCoordinateId]);
+
+    return $query->rowCount();
+  }
+
+  public function getLastCoordinate(int $peerId) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `peerCoordinate` WHERE `peerId` = ? ORDER BY `timeAdded` DESC LIMIT 1');
+
+    $query->execute([$peerId]);
+
+    return $query->fetch();
+  }
+
+  public function getPeerCoordinateRoute(int $peerCoordinateId) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `peerCoordinateRoute` WHERE `peerCoordinateId` = ? ORDER BY `level` ASC');
+
+    $query->execute([$peerCoordinateId]);
+
+    return $query->fetchAll();
+  }
+
   // Other
   public function optimize() {
 

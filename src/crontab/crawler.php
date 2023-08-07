@@ -44,7 +44,18 @@ $debug = [
           'insert' => 0,
           'update' => 0,
         ]
-      ]
+      ],
+      'coordinate' => [
+        'total' => [
+          'insert' => 0,
+        ],
+        'route' => [
+          'total' => [
+            'insert' => 0,
+            'delete' => 0,
+          ]
+        ]
+      ],
     ]
   ]
 ];
@@ -82,7 +93,7 @@ if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
         $debug['yggdrasil']['peer']['total']['insert']++;
       }
 
-      // Init peer data
+      // Init peer remote
       if ($connectedPeerRemoteUrl = Yggverse\Parser\Url::parse($connectedPeerInfo->remote)) {
 
         if ($dbPeerRemote = $db->findPeerRemote($dbPeerId,
@@ -121,6 +132,38 @@ if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
                                              time());
 
           $debug['yggdrasil']['peer']['remote']['total']['insert']++;
+        }
+
+        // Init peer coordinate
+        if ($dbPeerCoordinate = $db->getLastCoordinate($dbPeerId)) {
+
+          $peerCoordinateId = $dbPeerCoordinate->peerCoordinateId;
+
+        } else {
+
+          $peerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time());
+          $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
+        }
+
+        // Init peer coordinate route
+
+        $localPeerCoordinateRoute = [];
+        foreach ($db->getPeerCoordinateRoute($peerCoordinateId) as $dbPeerCoordinateRoute) {
+
+          $localPeerCoordinateRoute[$dbPeerCoordinateRoute->level] = $dbPeerCoordinateRoute->port;
+        }
+
+        // Compare remote and local routes to prevent write operations
+        if ($localPeerCoordinateRoute !== $connectedPeerInfo->coords) {
+
+          $debug['yggdrasil']['peer']['coordinate']['route']['total']['delete'] +=
+          $db->flushPeerCoordinateRoute($peerCoordinateId);
+
+          foreach ($connectedPeerInfo->coords as $level => $port) {
+
+            $debug['yggdrasil']['peer']['coordinate']['route']['total']['insert'] +=
+            $db->addPeerCoordinateRoute($peerCoordinateId, $level, $port);
+          }
         }
       }
 
