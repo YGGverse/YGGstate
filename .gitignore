@@ -1,5 +1,9 @@
-.vscode
-.ftpignore
+/.vscode/
+/vendor/
 
-/config/app.php
 /database/yggstate.mwb.bak
+
+/src/config/app.php
+
+.ftpignore
+composer.lock
