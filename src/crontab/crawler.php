@@ -121,6 +121,9 @@ if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
             $db->updatePeerRemoteUptime($dbPeerRemote->peerRemoteId, $connectedPeerInfo->uptime, time());
           }
 
+          $debug['yggdrasil']['peer']['remote']['total']['update'] +=
+          $db->updatePeerRemoteTimeOnline($dbPeerRemote->peerRemoteId, time());
+
         } else {
 
           if ($peerRemoteId = $db->addPeerRemote($dbPeerId,
@@ -133,6 +136,9 @@ if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
                                                  time())) {
 
             $debug['yggdrasil']['peer']['remote']['total']['insert']++;
+
+            $debug['yggdrasil']['peer']['remote']['total']['update'] +=
+            $db->updatePeerRemoteTimeOnline($peerRemoteId, time());
           }
         }
 
