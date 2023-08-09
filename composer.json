@@ -5,7 +5,8 @@
     "require": {
         "php": ">=8.1",
         "yggverse/yggdrasilctl": ">=0.1.0",
-        "yggverse/parser": ">=0.1.0"
+        "yggverse/parser": ">=0.1.0",
+        "yggverse/graph": ">=0.1.0"
     },
     "license": "MIT",
     "autoload": {
