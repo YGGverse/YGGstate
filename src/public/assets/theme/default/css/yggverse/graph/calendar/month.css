@@ -1,0 +1,133 @@
+/*
+ * this file implements yggverse/graph UI
+ *
+ * for any feedback visit official page:
+ * https://github.com/YGGverse/graph-php
+ *
+ */
+
+.yggverse_graph_calendar__month {
+  max-width: 672px;
+  overflow: hidden
+}
+
+.yggverse_graph_calendar__month > .day {
+  position:relative;
+  width:96px;
+  height:96px;
+  float: left;
+  background: #fff;
+}
+
+.yggverse_graph_calendar__month > .day:hover {
+  background: #f2f2f2
+}
+
+.yggverse_graph_calendar__month > .day > .number {
+  position: absolute;
+  z-index: 99;
+  top: 4px;
+  left: 4px;
+  width: 16px;
+  height: 16px;
+  background: #fff;
+  border-radius: 50%;
+  opacity: 0.8;
+  line-height: 16px;
+  font-size: 10px;
+  text-align: center;
+  color: #888;
+}
+
+.yggverse_graph_calendar__month > .day > .number.disabled {
+  color: #ccc;
+}
+
+/*
+ * daily layer (z-index reserved 1-2)
+ */
+.yggverse_graph_calendar__month > .day > .layer0 > .label {
+  position: absolute;
+  z-index: 2;
+  top: 4px;
+  right: 4px;
+  padding: 2px;
+  background: #fff;
+  border-radius: 3px;
+  opacity: 0.8;
+  font-size: 8px;
+  color: #888;
+  display: none
+}
+
+.yggverse_graph_calendar__month > .day:hover > .layer0 > .label {
+  display: block;
+}
+
+.yggverse_graph_calendar__month > .day > .layer0 > .label > .red {
+  color: #d77575;
+}
+
+.yggverse_graph_calendar__month > .day > .layer0 > .label > .green {
+  color: #277b1b;
+}
+
+.yggverse_graph_calendar__month > .day > .layer0 > .label > .blue {
+  color: #5785b7;
+}
+
+.yggverse_graph_calendar__month > .day > .layer0 > .value {
+  position:absolute;
+  z-index: 1;
+  bottom: 0;
+  opacity: 0.5;
+}
+
+.yggverse_graph_calendar__month > .day > .layer0 > .value.red {
+  background: #d77575;
+}
+
+.yggverse_graph_calendar__month > .day > .layer0 > .value.green {
+  background: #277b1b;
+}
+
+.yggverse_graph_calendar__month > .day > .layer0 > .value.blue {
+  background: #5785b7;
+}
+
+/*
+/* hourly layer (z-index reserved 4)
+ */
+.yggverse_graph_calendar__month > .day > .layer1 > .label {
+  display: none
+}
+
+.yggverse_graph_calendar__month > .day > .layer1 > .label > .red {
+  color: #d77575;
+}
+
+.yggverse_graph_calendar__month > .day > .layer1 > .label > .green {
+  color: #277b1b;
+}
+
+.yggverse_graph_calendar__month > .day > .layer1 > .label > .blue {
+  color: #5785b7;
+}
+
+.yggverse_graph_calendar__month > .day > .layer1 > .value {
+  position:absolute;
+  z-index: 4;
+  bottom: 0;
+}
+
+.yggverse_graph_calendar__month > .day > .layer1 > .value.red {
+  background: #d77575;
+}
+
+.yggverse_graph_calendar__month > .day > .layer1 > .value.green {
+  background: #277b1b;
+}
+
+.yggverse_graph_calendar__month > .day > .layer1 > .value.blue {
+  background: #5785b7;
+}

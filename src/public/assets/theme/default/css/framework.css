@@ -1,0 +1,108 @@
+.container {
+  position: relative;
+  overflow: hidden;
+  max-width: 1376px;
+  margin: 0 auto;
+}
+
+.row {
+  position: relative;
+  overflow: hidden;
+  padding: 8px;
+}
+
+.column {
+  position: relative;
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.text-color-green {
+  color: #277b1b;
+}
+
+.text-color-red {
+  color: #d77575;
+}
+
+.text-color-blue {
+  color: #5785b7;
+}
+
+/*
+.background-color-green {
+  background-color: #e9f9e7;
+}
+
+.background-color-red {
+  background-color: #fee;
+}
+*/
+
+.cursor-default {
+  cursor: default;
+}
+
+.font-size-22 {
+  font-size: 22px;
+}
+
+.padding-0 {
+  padding: 0;
+}
+
+.padding-4 {
+  padding: 4px;
+}
+
+.margin-y-8 {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.margin-bottom-8 {
+  margin-bottom: 8px;
+}
+
+.margin-left-16 {
+  margin-left: 16px;
+}
+
+/* responsive rules */
+
+.width-100 {
+  width: 100%;
+}
+
+.width-50 {
+  width: 50%;
+}
+
+@media (max-width: 1220px) {
+
+  .width-tablet-100 {
+    width: 100%;
+  }
+}
+
+@media (max-width: 512px) {
+
+  .width-mobile-100 {
+    width: 100%;
+  }
+}
