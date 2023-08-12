@@ -110,9 +110,9 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
     <title>
       <?php echo sprintf(_('Peer %s - %s'), $peerInfo->address, WEBSITE_NAME) ?>
     </title>
-    <meta name="description" content="<?php echo _('Yggdrasil network analytics: peers, ip, traffic, timing, geo-location') ?>">
-    <meta name="keywords" content="yggdrasil, yggstate, yggverse, analytics, explorer, open-source, open-data, js-less">
-    <meta charset="UTF-8">
+    <meta name="description" content="<?php echo _('Yggdrasil network analytics: peers, ip, traffic, timing, geo-location') ?>" />
+    <meta name="keywords" content="yggdrasil, yggstate, yggverse, analytics, explorer, open-source, open-data, js-less" />
+    <meta charset="UTF-8" />
   </head>
   <body>
     <header>
