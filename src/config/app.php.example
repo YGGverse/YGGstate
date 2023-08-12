@@ -33,22 +33,33 @@
  * https://github.com/YGGverse/YGGstate/issues
 */
 
+// PHP
+declare(strict_types=1);
+
 // Debug
 ini_set('display_errors', '1');
 ini_set('display_startup_errors', '1');
 error_reporting(E_ALL);
 
 // Database
-define('DB_HOST', 'localhost');
 define('DB_PORT', 3306);
+define('DB_HOST', 'localhost');
 define('DB_NAME', '');
 define('DB_USERNAME', '');
 define('DB_PASSWORD', '');
 
-// Crawler
+// Memcached
+define('MEMCACHED_PORT', 11211);
+define('MEMCACHED_HOST', 'localhost');
+define('MEMCACHED_NAMESPACE', 'yggstate');
+define('MEMCACHED_TIMEOUT', 60 * 5);
 
-/*
- * Stop crawler on disk quota reached
- *
- */
+// Webapp
+define('WEBSITE_URL', '');
+define('WEBSITE_NAME', 'YGGstate');
+
+define('WEBSITE_PEER_REMOTE_TIME_ONLINE_TIMEOUT', 60 * 5);
+define('WEBSITE_PEER_REMOTE_PAGINATION_LIMIT', 20);
+
+// Crawler
 define('CRAWL_STOP_DISK_QUOTA_MB_LEFT', 128);
