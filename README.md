@@ -1,2 +1,2 @@
 # YGGstate
-Yggdrasil Network Analytics
+Yggdrasil Network Explorer

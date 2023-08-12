@@ -1,6 +1,6 @@
 {
     "name": "yggverse/yggstate",
-    "description": "Yggdrasil Network Analytics",
+    "description": "Yggdrasil Network Explorer",
     "type": "project",
     "require": {
         "php": ">=8.1",
