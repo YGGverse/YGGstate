@@ -39,10 +39,30 @@ $debug = [
         'online' => 0,
         'insert' => 0,
       ],
-      'remote' => [
+      'session' => [
         'total' => [
           'insert' => 0,
           'update' => 0,
+        ]
+      ],
+      'remote' => [
+        'total' => [
+          'insert' => 0,
+        ],
+        'scheme' => [
+          'total' => [
+            'insert' => 0,
+          ]
+        ],
+        'host' => [
+          'total' => [
+            'insert' => 0,
+          ]
+        ],
+        'port' => [
+          'total' => [
+            'insert' => 0,
+          ]
         ]
       ],
       'coordinate' => [
@@ -52,9 +72,13 @@ $debug = [
         'route' => [
           'total' => [
             'insert' => 0,
-            'delete' => 0,
           ]
         ]
+      ],
+      'connection' => [
+        'total' => [
+          'insert' => 0,
+        ],
       ],
     ]
   ]
@@ -73,7 +97,7 @@ try {
 }
 
 // Collect connected peers
-if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
+if ($connectedPeers = \Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
 
   foreach ($connectedPeers as $connectedPeerAddress => $connectedPeerInfo) {
 
@@ -94,96 +118,164 @@ if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
         }
       }
 
-      // Init peer remote
-      if ($connectedPeerRemoteUrl = Yggverse\Parser\Url::parse($connectedPeerInfo->remote)) {
+      // Init peer session
+      if ($dbLastPeerSession = $db->findLastPeerSessionByPeerId($dbPeerId)) {
 
-        if ($dbPeerRemote = $db->findPeerRemote($dbPeerId,
-                                                $connectedPeerRemoteUrl->host->scheme,
-                                                $connectedPeerRemoteUrl->host->name,
-                                                $connectedPeerRemoteUrl->host->port)) {
+        $dbPeerSessionId = $dbLastPeerSession->peerSessionId;
 
-          // Update connection stats
-          if ($dbPeerRemote->received < $connectedPeerInfo->bytes_recvd) {
+        // If remote session uptime < than stored, register new one
+        if ($connectedPeerInfo->uptime < $dbLastPeerSession->uptime) {
 
-            $debug['yggdrasil']['peer']['remote']['total']['update'] +=
-            $db->updatePeerRemoteReceived($dbPeerRemote->peerRemoteId, $connectedPeerInfo->bytes_recvd, time());
+          if ($dbPeerSessionId = $db->addPeerSession($dbPeerId,
+                                                     round($connectedPeerInfo->uptime),
+                                                     $connectedPeerInfo->bytes_sent,
+                                                     $connectedPeerInfo->bytes_recvd,
+                                                     time())) {
+
+            $debug['yggdrasil']['peer']['session']['total']['insert']++;
           }
-
-          if ($dbPeerRemote->sent < $connectedPeerInfo->bytes_sent) {
-
-            $debug['yggdrasil']['peer']['remote']['total']['update'] +=
-            $db->updatePeerRemoteSent($dbPeerRemote->peerRemoteId, $connectedPeerInfo->bytes_sent, time());
-          }
-
-          if ($dbPeerRemote->uptime < $connectedPeerInfo->uptime) {
-
-            $debug['yggdrasil']['peer']['remote']['total']['update'] +=
-            $db->updatePeerRemoteUptime($dbPeerRemote->peerRemoteId, $connectedPeerInfo->uptime, time());
-          }
-
-          $debug['yggdrasil']['peer']['remote']['total']['update'] +=
-          $db->updatePeerRemoteTimeOnline($dbPeerRemote->peerRemoteId, time());
 
         } else {
 
-          if ($peerRemoteId = $db->addPeerRemote($dbPeerId,
-                                                 $connectedPeerRemoteUrl->host->scheme,
-                                                 $connectedPeerRemoteUrl->host->name,
-                                                 $connectedPeerRemoteUrl->host->port,
-                                                 $connectedPeerInfo->bytes_recvd,
-                                                 $connectedPeerInfo->bytes_sent,
-                                                 $connectedPeerInfo->uptime,
-                                                 time())) {
-
-            $debug['yggdrasil']['peer']['remote']['total']['insert']++;
-
-            $debug['yggdrasil']['peer']['remote']['total']['update'] +=
-            $db->updatePeerRemoteTimeOnline($peerRemoteId, time());
-          }
+          $debug['yggdrasil']['peer']['session']['total']['update'] +=
+          $db->updatePeerSession($dbLastPeerSession->peerSessionId,
+                                 round($connectedPeerInfo->uptime),
+                                 $connectedPeerInfo->bytes_sent,
+                                 $connectedPeerInfo->bytes_recvd,
+                                 time());
         }
 
-        // Init peer coordinate
-        if ($dbPeerCoordinate = $db->getLastCoordinate($dbPeerId)) {
+      } else {
 
-          $peerCoordinateId = $dbPeerCoordinate->peerCoordinateId;
+        if ($dbPeerSessionId = $db->addPeerSession($dbPeerId,
+                                                   round($connectedPeerInfo->uptime),
+                                                   $connectedPeerInfo->bytes_sent,
+                                                   $connectedPeerInfo->bytes_recvd,
+                                                   time())) {
 
-          // Create new peer coordinate on port change
-          if ($dbPeerCoordinate->port !== $connectedPeerInfo->port) {
+          $debug['yggdrasil']['peer']['session']['total']['insert']++;
+        }
+      }
 
-            if ($peerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time())) {
+      // Init peer coordinate
+      if ($dbPeerCoordinate = $db->findLastPeerCoordinateByPeerId($dbPeerId)) {
 
-              $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
-            }
-          }
+        $dbPeerCoordinateId = $dbPeerCoordinate->peerCoordinateId;
 
-        } else {
+        // Peer have changed it port, init new coordinate
+        if ($dbPeerCoordinate->port != $connectedPeerInfo->port) {
 
-          if ($peerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time())) {
+          if ($dbPeerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time())) {
 
             $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
           }
         }
 
-        // Init peer coordinate routing
-        $localPeerCoordinateRoute = [];
-        foreach ($db->getPeerCoordinateRoute($peerCoordinateId) as $dbPeerCoordinateRoute) {
+      } else {
 
-          $localPeerCoordinateRoute[$dbPeerCoordinateRoute->level] = $dbPeerCoordinateRoute->port;
+        if ($dbPeerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time())) {
+
+          $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
+        }
+      }
+
+      // Init peer coordinate route
+      $dbCoords = [];
+      foreach ($db->findPeerCoordinateRouteByCoordinateId($dbPeerCoordinateId) as $dbPeerCoordinateRoute) {
+        $dbCoords[$dbPeerCoordinateRoute->level] = $dbPeerCoordinateRoute->port;
+      }
+
+      // Compare remote / local route, create new on changed
+      if ($dbCoords !== $connectedPeerInfo->coords) {
+
+        if ($dbPeerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time())) {
+
+          $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
         }
 
-        // Compare remote and local routes to prevent extra writing operations
-        if ($localPeerCoordinateRoute !== $connectedPeerInfo->coords) {
+        foreach ($connectedPeerInfo->coords as $level => $port) {
 
-          $debug['yggdrasil']['peer']['coordinate']['route']['total']['delete'] +=
-          $db->flushPeerCoordinateRoute($peerCoordinateId);
+          if ($db->addPeerCoordinateRoute($dbPeerCoordinateId, $level, $port)) {
 
-          foreach ($connectedPeerInfo->coords as $level => $port) {
-
-            if ($db->addPeerCoordinateRoute($peerCoordinateId, $level, $port)) {
-
-              $debug['yggdrasil']['peer']['coordinate']['route']['total']['insert']++;
-            }
+            $debug['yggdrasil']['peer']['coordinate']['route']['total']['insert']++;
           }
+        }
+      }
+
+      // Init peer remote
+      if ($connectedPeerRemoteUrl = \Yggverse\Parser\Url::parse($connectedPeerInfo->remote)) {
+
+        // Init peer scheme
+        if ($dbPeerRemoteScheme = $db->findPeerRemoteScheme($connectedPeerRemoteUrl->host->scheme)) {
+
+          $dbPeerRemoteSchemeId = $dbPeerRemoteScheme->peerRemoteSchemeId;
+
+        } else {
+
+          if ($dbPeerRemoteSchemeId = $db->addPeerRemoteScheme($connectedPeerRemoteUrl->host->scheme, time())) {
+
+            $debug['yggdrasil']['peer']['remote']['scheme']['total']['insert']++;
+          }
+        }
+
+        // Init peer host
+        if ($dbPeerRemoteHost = $db->findPeerRemoteHost($connectedPeerRemoteUrl->host->name)) {
+
+          $dbPeerRemoteHostId = $dbPeerRemoteHost->peerRemoteHostId;
+
+        } else {
+
+          if ($dbPeerRemoteHostId = $db->addPeerRemoteHost($connectedPeerRemoteUrl->host->name, time())) {
+
+            $debug['yggdrasil']['peer']['remote']['host']['total']['insert']++;
+          }
+        }
+
+        // Init peer port
+        if ($dbPeerRemotePort = $db->findPeerRemotePort($connectedPeerRemoteUrl->host->port)) {
+
+          $dbPeerRemotePortId = $dbPeerRemotePort->peerRemotePortId;
+
+        } else {
+
+          if ($dbPeerRemotePortId = $db->addPeerRemotePort($connectedPeerRemoteUrl->host->port, time())) {
+
+            $debug['yggdrasil']['peer']['remote']['port']['total']['insert']++;
+          }
+        }
+
+
+        if ($dbPeerRemote = $db->findPeerRemote($dbPeerId,
+                                                $dbPeerRemoteSchemeId,
+                                                $dbPeerRemoteHostId,
+                                                $dbPeerRemotePortId)) {
+
+          $dbPeerRemoteId = $dbPeerRemote->peerRemoteId;
+
+        } else {
+
+          if ($dbPeerRemoteId = $db->addPeerRemote($dbPeerId,
+                                                   $dbPeerRemoteSchemeId,
+                                                   $dbPeerRemoteHostId,
+                                                   $dbPeerRemotePortId,
+                                                   time())) {
+
+            $debug['yggdrasil']['peer']['remote']['total']['insert']++;
+          }
+        }
+
+      // If something went wrong with URL parse, skip next operations for this peer
+      } else {
+
+        continue;
+      }
+
+      // Init peer connection
+      if (!$db->findPeerConnection($dbPeerSessionId, $dbPeerRemoteId, $dbPeerCoordinateId)) {
+
+        if ($db->addPeerConnection($dbPeerSessionId, $dbPeerRemoteId, $dbPeerCoordinateId, time())) {
+
+          $debug['yggdrasil']['peer']['connection']['total']['insert']++;
         }
       }
 

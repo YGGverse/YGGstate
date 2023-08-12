@@ -81,6 +81,28 @@ class MySQL {
     return $query->fetch();
   }
 
+  public function getPeersTotal() : int {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT COUNT(*) AS `result` FROM `peer`');
+
+    $query->execute();
+
+    return $query->fetch()->result;
+  }
+
+  public function getPeer(int $peerId) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `peer` WHERE `peerId` = ? LIMIT 1');
+
+    $query->execute([$peerId]);
+
+    return $query->fetch();
+  }
+
   public function getPeers() {
 
     $this->_debug->query->select->total++;
@@ -93,76 +115,183 @@ class MySQL {
   }
 
   // Peer remote
-  public function addPeerRemote(int $peerId, string $scheme, string $host, int $port, int $received, int $sent, float $uptime, int $timeAdded) {
+  public function addPeerRemote(int $peerId, int $peerRemoteSchemeId, int $peerRemoteHostId, int $peerRemotePortId, int $timeAdded) {
 
     $this->_debug->query->insert->total++;
 
-    $query = $this->_db->prepare('INSERT INTO `peerRemote` SET  `peerId`      = ?,
-                                                                `scheme`      = ?,
-                                                                `host`        = ?,
-                                                                `port`        = ?,
-                                                                `received`    = ?,
-                                                                `sent`        = ?,
-                                                                `uptime`      = ?,
-                                                                `timeAdded`   = ?,
-                                                                `timeUpdated` = ?');
+    $query = $this->_db->prepare('INSERT INTO `peerRemote` SET  `peerId`             = ?,
+                                                                `peerRemoteSchemeId` = ?,
+                                                                `peerRemoteHostId`   = ?,
+                                                                `peerRemotePortId`   = ?,
+                                                                `timeAdded`          = ?');
 
-    $query->execute([$peerId, $scheme, $host, $port, $received, $sent, $uptime, $timeAdded, $timeAdded]);
+    $query->execute([$peerId, $peerRemoteSchemeId, $peerRemoteHostId, $peerRemotePortId, $timeAdded]);
 
     return $this->_db->lastInsertId();
   }
 
-  public function updatePeerRemoteReceived(int $peerRemoteId, int $received, int $timeUpdated) {
-
-    $this->_debug->query->update->total++;
-
-    $query = $this->_db->prepare('UPDATE `peerRemote` SET `received` = ?, `timeUpdated` = ? WHERE `peerRemoteId` = ? LIMIT 1');
-
-    $query->execute([$received, $timeUpdated, $peerRemoteId]);
-
-    return $query->rowCount();
-  }
-
-  public function updatePeerRemoteSent(int $peerRemoteId, int $sent, int $timeUpdated) {
-
-    $this->_debug->query->update->total++;
-
-    $query = $this->_db->prepare('UPDATE `peerRemote` SET `sent` = ?, `timeUpdated` = ? WHERE `peerRemoteId` = ? LIMIT 1');
-
-    $query->execute([$sent, $timeUpdated, $peerRemoteId]);
-
-    return $query->rowCount();
-  }
-
-  public function updatePeerRemoteUptime(int $peerRemoteId, float $uptime, int $timeUpdated) {
-
-    $this->_debug->query->update->total++;
-
-    $query = $this->_db->prepare('UPDATE `peerRemote` SET `uptime` = ?, `timeUpdated` = ? WHERE `peerRemoteId` = ? LIMIT 1');
-
-    $query->execute([$uptime, $timeUpdated, $peerRemoteId]);
-
-    return $query->rowCount();
-  }
-
-  public function updatePeerRemoteTimeOnline(int $peerRemoteId, $time) {
-
-    $this->_debug->query->update->total++;
-
-    $query = $this->_db->prepare('UPDATE `peerRemote` SET `timeOnline` = ?, `timeUpdated` = ? WHERE `peerRemoteId` = ? LIMIT 1');
-
-    $query->execute([$time, $time, $peerRemoteId]);
-
-    return $query->rowCount();
-  }
-
-  public function findPeerRemote(int $peerId, string $scheme, string $host, int $port) {
+  public function findPeerRemote(int $peerId, int $peerRemoteSchemeId, int $peerRemoteHostId, int $peerRemotePortId) {
 
     $this->_debug->query->select->total++;
 
-    $query = $this->_db->prepare('SELECT * FROM `peerRemote` WHERE `peerId` = ? AND `scheme` = ? AND `host` = ? AND `port` = ? LIMIT 1');
+    $query = $this->_db->prepare('SELECT * FROM `peerRemote` WHERE `peerId` = ? AND `peerRemoteSchemeId` = ? AND `peerRemoteHostId` = ? AND `peerRemotePortId` = ? LIMIT 1');
 
-    $query->execute([$peerId, $scheme, $host, $port]);
+    $query->execute([$peerId, $peerRemoteSchemeId, $peerRemoteHostId, $peerRemotePortId]);
+
+    return $query->fetch();
+  }
+
+  public function findPeerRemoteScheme(string $name) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `peerRemoteScheme` WHERE `name` = ? LIMIT 1');
+
+    $query->execute([$name]);
+
+    return $query->fetch();
+  }
+
+  public function addPeerRemoteScheme(string $name, int $timeAdded) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `peerRemoteScheme` SET `name` = ?, `timeAdded` = ?');
+
+    $query->execute([$name, $timeAdded]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function findPeerRemoteHost(string $name) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `peerRemoteHost` WHERE `name` = ? LIMIT 1');
+
+    $query->execute([$name]);
+
+    return $query->fetch();
+  }
+
+  public function addPeerRemoteHost(string $name, int $timeAdded) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `peerRemoteHost` SET `name` = ?, `timeAdded` = ?');
+
+    $query->execute([$name, $timeAdded]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function findPeerRemotePort(mixed $name) { // int|null
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `peerRemotePort` WHERE `name` = ? LIMIT 1');
+
+    $query->execute([$name]);
+
+    return $query->fetch();
+  }
+
+  public function addPeerRemotePort(mixed $name, int $timeAdded) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `peerRemotePort` SET `name` = ?, `timeAdded` = ?');
+
+    $query->execute([$name, $timeAdded]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  // Peer session
+  public function addPeerSession(int $peerId, int $uptime, int $sent, int $received, int $timeAdded) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `peerSession` SET `peerId`      = ?,
+                                                                `uptime`      = ?,
+                                                                `sent`        = ?,
+                                                                `received`    = ?,
+                                                                `timeAdded`   = ?,
+                                                                `timeUpdated` = ?');
+
+    $query->execute([$peerId, $uptime, $sent, $received, $timeAdded, $timeAdded]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function updatePeerSession(int $peerSessionId, int $uptime, int $sent, int $received, int $timeUpdated) {
+
+    $this->_debug->query->update->total++;
+
+    $query = $this->_db->prepare('UPDATE `peerSession` SET `uptime` = ?, `sent` = ?, `received` = ?, `timeUpdated` = ? WHERE `peerSessionId` = ? LIMIT 1');
+
+    $query->execute([$uptime, $sent, $received, $timeUpdated, $peerSessionId]);
+
+    return $query->rowCount();
+  }
+
+  public function findLastPeerSessionByPeerId(int $peerId) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `peerSession` WHERE `peerId` = ? ORDER BY `peerSessionId` DESC LIMIT 1');
+
+    $query->execute([$peerId]);
+
+    return $query->fetch();
+  }
+
+  public function getPeerSessionSentSum() {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT SUM(`sent`) AS `result` FROM `peerSession`');
+
+    $query->execute();
+
+    return $query->fetch()->result;
+  }
+
+  public function getPeerSessionReceivedSum() {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT SUM(`received`) AS `result` FROM `peerSession`');
+
+    $query->execute();
+
+    return $query->fetch()->result;
+  }
+
+  // Peer connection
+  public function addPeerConnection(int $peerSessionId, int $peerRemoteId, int $peerCoordinateId, int $timeAdded) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `peerConnection` SET  `peerSessionId`    = ?,
+                                                                    `peerRemoteId`     = ?,
+                                                                    `peerCoordinateId` = ?,
+                                                                    `timeAdded`        = ?');
+
+    $query->execute([$peerSessionId, $peerRemoteId, $peerCoordinateId, $timeAdded]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function findPeerConnection(int $peerSessionId, int $peerRemoteId, int $peerCoordinateId) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM  `peerConnection`
+                                           WHERE `peerSessionId` = ? AND `peerRemoteId` = ? AND `peerCoordinateId` = ?
+                                           LIMIT 1');
+
+    $query->execute([$peerSessionId, $peerRemoteId, $peerCoordinateId]);
 
     return $query->fetch();
   }
@@ -196,29 +325,18 @@ class MySQL {
     return $this->_db->lastInsertId();
   }
 
-  public function flushPeerCoordinateRoute(int $peerCoordinateId) {
-
-    $this->_debug->query->delete->total++;
-
-    $query = $this->_db->prepare('DELETE FROM `peerCoordinateRoute` WHERE `peerCoordinateId` = ?');
-
-    $query->execute([$peerCoordinateId]);
-
-    return $query->rowCount();
-  }
-
-  public function getLastCoordinate(int $peerId) {
+  public function findLastPeerCoordinateByPeerId(int $peerId) {
 
     $this->_debug->query->select->total++;
 
-    $query = $this->_db->prepare('SELECT * FROM `peerCoordinate` WHERE `peerId` = ? ORDER BY `timeAdded` DESC LIMIT 1');
+    $query = $this->_db->prepare('SELECT * FROM `peerCoordinate` WHERE `peerId` = ? ORDER BY `peerCoordinateId` DESC LIMIT 1');
 
     $query->execute([$peerId]);
 
     return $query->fetch();
   }
 
-  public function getPeerCoordinateRoute(int $peerCoordinateId) {
+  public function findPeerCoordinateRouteByCoordinateId(int $peerCoordinateId) {
 
     $this->_debug->query->select->total++;
 
@@ -230,59 +348,251 @@ class MySQL {
   }
 
   // Analytics
-  public function getPeerFirst() {
+  public function getPeerFirstByTimeAdded() {
 
     $this->_debug->query->select->total++;
 
-    $query = $this->_db->prepare('SELECT * FROM `peer` ORDER BY `peerId` ASC LIMIT 1');
+    $query = $this->_db->prepare('SELECT * FROM `peer` ORDER BY `timeAdded` ASC LIMIT 1');
 
     $query->execute();
 
     return $query->fetch();
   }
 
-  public function getPeerTotal() {
+  public function findPeerSessionReceivedSumByTimeUpdated(int $timeFrom, int $timeTo, int $requestPeerId = 0) : int {
 
     $this->_debug->query->select->total++;
 
-    $query = $this->_db->prepare('SELECT COUNT(*) AS `total` FROM `peer`');
+    $query = $this->_db->prepare('SELECT SUM(`received`) AS `result`
+
+    FROM  `peerSession`
+    WHERE `timeUpdated` >= :timeFrom AND `timeUpdated` <= :timeTo' . ($requestPeerId > 0 ? ' AND `peerId` = ' . (int) $requestPeerId : false));
+
+    $query->execute(
+      [
+        ':timeFrom' => $timeFrom,
+        ':timeTo'   => $timeTo
+      ]
+    );
+
+    return (int) $query->fetch()->result;
+  }
+
+  public function findPeerSessionSentSumByTimeUpdated(int $timeFrom, int $timeTo, int $requestPeerId = 0) : int {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT SUM(`sent`) AS `result`
+
+    FROM `peerSession`
+    WHERE `timeUpdated` >= :timeFrom AND `timeUpdated` <= :timeTo' . ($requestPeerId > 0 ? ' AND `peerId` = ' . (int) $requestPeerId : false));
+
+    $query->execute(
+      [
+        ':timeFrom' => $timeFrom,
+        ':timeTo'   => $timeTo
+      ]
+    );
+
+    return (int) $query->fetch()->result;
+  }
+
+  public function findPeerTotalByTimeAdded(int $timeFrom, int $timeTo, int $requestPeerId = 0) : int {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT COUNT(DISTINCT `peerId`) AS `result`
+
+    FROM `peerSession` WHERE `timeAdded` >= :timeFrom AND `timeAdded` <= :timeTo' .
+
+    ($requestPeerId > 0 ? ' AND `peerId` = ' . (int) $requestPeerId : false));
+
+    $query->execute(
+      [
+        ':timeFrom' => $timeFrom,
+        ':timeTo'   => $timeTo
+      ]
+    );
+
+    return (int) $query->fetch()->result;
+  }
+
+  public function findPeerTotalByTimeUpdated(int $timeFrom, int $timeTo, int $requestPeerId = 0) : int {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT COUNT(DISTINCT `peerId`) AS `result`
+
+    FROM `peerSession` WHERE (`timeUpdated` >= :timeFrom AND `timeUpdated` <= :timeTo)' .
+
+    ($requestPeerId > 0 ? ' AND `peerId` = ' . (int) $requestPeerId : false));
+
+    $query->execute(
+      [
+        ':timeFrom' => $timeFrom,
+        ':timeTo'   => $timeTo
+      ]
+    );
+
+    return (int) $query->fetch()->result;
+  }
+
+  // Month page
+  public function findPeers(int $start = 0, int $limit = 20, string $sort = 'timeOnline', string $order = 'DESC') {
+
+    if (!in_array($sort,
+      [
+        'timeOnline',
+        'uptimeAvg',
+        'sentSum',
+        'receivedSum',
+        'address',
+      ])) {
+        $sort = 'timeOnline';
+      }
+
+    if (!in_array($order,
+      [
+        'ASC',
+        'DESC',
+      ])) {
+        $order = 'DESC';
+      }
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT
+
+    `peer`.`peerId`,
+    `peer`.`address`,
+
+    (SELECT MAX(`peerSession`.`timeUpdated`) FROM `peerSession` WHERE `peerSession`.`peerId` = `peer`.`peerId`) AS `timeOnline`,
+    (SELECT SUM(`peerSession`.`sent`) FROM `peerSession` WHERE `peerSession`.`peerId` = `peer`.`peerId`) AS `sentSum`,
+    (SELECT SUM(`peerSession`.`received`) FROM `peerSession` WHERE `peerSession`.`peerId` = `peer`.`peerId`) AS `receivedSum`,
+    (SELECT AVG(`peerSession`.`uptime`) FROM `peerSession` WHERE `peerSession`.`peerId` = `peer`.`peerId`) AS `uptimeAvg`
+
+    FROM `peer`
+
+    GROUP BY `peer`.`peerId`
+
+    ORDER BY ' . $sort . ' ' . $order . '
+
+    LIMIT ' . (int) $start . ', ' . (int) $limit);
 
     $query->execute();
 
-    return $query->fetch()->total;
+    return $query->fetchAll();
   }
 
-  public function findPeerTotalByTime(int $timeUpdatedFrom, int $timeUpdatedTo) : int {
+  // Peer page
+  public function findPeerPeerConnections(int $peerId, int $start = 0, int $limit = 20, string $sort = 'timeOnline', string $order = 'DESC') {
+
+    if (!in_array($sort,
+      [
+        'peerConnection.timeAdded',
+      ])) {
+        $sort = 'peerConnection.timeAdded';
+      }
+
+    if (!in_array($order,
+      [
+        'ASC',
+        'DESC',
+      ])) {
+        $order = 'DESC';
+      }
 
     $this->_debug->query->select->total++;
 
-    $query = $this->_db->prepare('SELECT COUNT(DISTINCT `peerId`) AS `total` FROM `peerRemote` WHERE (`timeAdded` > ? AND `timeAdded` < ?) OR (`timeUpdated` > ? AND `timeUpdated` < ?)');
+    $query = $this->_db->prepare("SELECT
 
-    $query->execute([$timeUpdatedFrom, $timeUpdatedTo, $timeUpdatedFrom, $timeUpdatedTo]);
+    MAX(`peerSession`.`timeUpdated`) AS `timeOnline`,
 
-    return (int) $query->fetch()->total;
+    `peerConnection`.`peerRemoteId`,
+    `peerConnection`.`timeAdded`,
+
+    `peerRemoteScheme`.`name` AS `remoteScheme`,
+    `peerRemoteHost`.`name` AS `remoteHost`,
+    `peerRemotePort`.`name` AS `remotePort`,
+
+    `peerCoordinate`.`port` AS `connectionPort`,
+
+    CONCAT
+    (
+      IF  (`peerRemotePort`.`name` IS NOT NULL,
+                CONCAT(`peerRemoteScheme`.`name`, '://', `peerRemoteHost`.`name`, ':', `peerRemotePort`.`name`),
+                CONCAT(`peerRemoteScheme`.`name`, '://', `peerRemoteHost`.`name`)
+          )
+    ) AS `remote`,
+
+    (
+      SELECT GROUP_CONCAT(`port` SEPARATOR ' &rarr; ')
+      FROM `peerCoordinateRoute`
+      WHERE `peerCoordinateRoute`.`peerCoordinateId` = `peerConnection`.`peerCoordinateId`
+      ORDER BY `peerCoordinateRoute`.`level` ASC
+    ) AS `route`
+
+    FROM `peerConnection`
+
+    JOIN `peerSession` ON (`peerSession`.`peerSessionId` = `peerConnection`.`peerSessionId`)
+    JOIN `peerRemote` ON (`peerRemote`.`peerRemoteId` = `peerConnection`.`peerRemoteId`)
+    JOIN `peerCoordinate` ON (`peerCoordinate`.`peerCoordinateId` = `peerConnection`.`peerCoordinateId`)
+
+    JOIN `peerRemoteScheme` ON (`peerRemoteScheme`.`peerRemoteSchemeId` = `peerRemote`.`peerRemoteSchemeId`)
+    JOIN `peerRemoteHost` ON (`peerRemoteHost`.`peerRemoteHostId` = `peerRemote`.`peerRemoteHostId`)
+    JOIN `peerRemotePort` ON (`peerRemotePort`.`peerRemotePortId` = `peerRemote`.`peerRemotePortId`)
+
+    JOIN `peer` ON (`peer`.`peerId` = `peerRemote`.`peerId`)
+
+    WHERE `peerRemote`.`peerId` = :peerId
+
+    GROUP BY `peerConnection`.`peerConnectionId`
+
+    ORDER BY " . $sort . " " . $order . "
+
+    LIMIT " . (int) $start . ", " . (int) $limit);
+
+    $query->execute(
+      [
+        ':peerId'   => $peerId,
+      ]
+    );
+
+    return $query->fetchAll();
   }
 
-  public function findPeerRemoteReceivedSumByTime(int $timeUpdatedFrom, int $timeUpdatedTo) : int {
+  public function getPeerInfo(int $peerId) {
 
     $this->_debug->query->select->total++;
 
-    $query = $this->_db->prepare('SELECT SUM(`received`) AS `result` FROM `peerRemote` WHERE (`timeAdded` > ? AND `timeAdded` < ?) OR (`timeUpdated` > ? AND `timeUpdated` < ?)');
+    $query = $this->_db->prepare('SELECT
 
-    $query->execute([$timeUpdatedFrom, $timeUpdatedTo, $timeUpdatedFrom, $timeUpdatedTo]);
+    `peer`.`peerId`,
+    `peer`.`key`,
+    `peer`.`address`,
+    `peer`.`timeAdded`,
 
-    return (int) $query->fetch()->result;
-  }
+    MAX(`peerSession`.`timeUpdated`) AS `timeOnline`,
+    SUM(`peerSession`.`sent`) AS `sentSum`,
+    SUM(`peerSession`.`received`) AS `receivedSum`,
+    ROUND(AVG(`peerSession`.`uptime`)) AS `uptimeAvg`,
 
-  public function findPeerRemoteSentSumByTime(int $timeUpdatedFrom, int $timeUpdatedTo) : int {
+   (SELECT COUNT(*) FROM `peerSession` WHERE `peerSession`.`peerId` = `peer`.`peerId`) AS `sessionTotal`,
+   (SELECT COUNT(*) FROM `peerRemote` WHERE `peerRemote`.`peerId` = `peer`.`peerId`) AS `remoteTotal`,
+   (SELECT COUNT(*) FROM `peerCoordinate` WHERE `peerCoordinate`.`peerId` = `peer`.`peerId`) AS `coordinateTotal`
 
-    $this->_debug->query->select->total++;
+    FROM `peer`
+    JOIN `peerSession` ON (`peerSession`.`peerId` = `peer`.`peerId`)
 
-    $query = $this->_db->prepare('SELECT SUM(`sent`) AS `result` FROM `peerRemote` WHERE (`timeAdded` > ? AND `timeAdded` < ?) OR (`timeUpdated` > ? AND `timeUpdated` < ?)');
+    WHERE `peer`.`peerId` = ?
 
-    $query->execute([$timeUpdatedFrom, $timeUpdatedTo, $timeUpdatedFrom, $timeUpdatedTo]);
+    GROUP BY `peer`.`peerId`
 
-    return (int) $query->fetch()->result;
+    LIMIT 1');
+
+    $query->execute([$peerId]);
+
+    return $query->fetch();
   }
 
   // Other
@@ -290,5 +600,7 @@ class MySQL {
 
     $this->_db->query('OPTIMIZE TABLE `peer`');
     $this->_db->query('OPTIMIZE TABLE `peerRemote`');
+    $this->_db->query('OPTIMIZE TABLE `peerCoordinate`');
+    $this->_db->query('OPTIMIZE TABLE `peerCoordinateRoute`');
   }
 }
