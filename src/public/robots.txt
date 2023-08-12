@@ -1,0 +1,6 @@
+User-Agent: *
+
+Disallow: *search*
+Disallow: *sort=*
+Disallow: *order=*
+Disallow: *page=*
