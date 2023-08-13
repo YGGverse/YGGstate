@@ -7,7 +7,7 @@
         "yggverse/yggdrasilctl": ">=0.1.0",
         "yggverse/parser": ">=0.1.0",
         "yggverse/graph": ">=0.1.0",
-        "yggverse/cache": ">=0.2.0"
+        "yggverse/cache": ">=0.3.0"
     },
     "license": "MIT",
     "autoload": {
