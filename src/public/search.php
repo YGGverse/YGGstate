@@ -103,7 +103,7 @@ $results = $sphinx->searchPeers($requestQuery,
                     <th class="text-center"><?php echo _('Remote host') ?></th>
                     <th class="text-center"><?php echo _('Remote port') ?></th>
                   </tr>
-                <thead>
+                </thead>
                 <tbody>
                   <?php foreach ($results as $result) { ?>
                     <tr>
