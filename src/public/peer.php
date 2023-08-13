@@ -145,7 +145,7 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
                     <thead>
                       <tr>
                         <th class="text-left">
-                          <a href="?peerId=<?php echo $requestPeerId ?>&sort=peerConnection.timeAdded&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
+                          <a href="<?php echo WEBSITE_URL ?>/peer.php?peerId=<?php echo $requestPeerId ?>&sort=peerConnection.timeAdded&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
                               <?php echo _('Time') ?>
                           </a>
                         </th>
@@ -183,10 +183,10 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
                       <tr>
                         <td colspan="5" class="text-left">
                           <?php if ($requestPage > 1) { ?>
-                            <a href="?peerId=<?php echo $requestPeerId ?>&sort=<?php echo $requestSort ?>&page=<?php echo $requestPage - 1 ?>"><?php echo _('&larr;') ?></a>
+                            <a href="<?php echo WEBSITE_URL ?>/peer.php?peerId=<?php echo $requestPeerId ?>&sort=<?php echo $requestSort ?>&page=<?php echo $requestPage - 1 ?>"><?php echo _('&larr;') ?></a>
                           <?php } ?>
                           <?php echo sprintf(_('page %s'), $requestPage) ?>
-                          <a href="?peerId=<?php echo $requestPeerId ?>&sort=<?php echo $requestSort ?>&page=<?php echo $requestPage + 1 ?>"><?php echo _('&rarr;') ?></a>
+                          <a href="<?php echo WEBSITE_URL ?>/peer.php?peerId=<?php echo $requestPeerId ?>&sort=<?php echo $requestSort ?>&page=<?php echo $requestPage + 1 ?>"><?php echo _('&rarr;') ?></a>
                         </td>
                       </tr>
                     </tfoot>

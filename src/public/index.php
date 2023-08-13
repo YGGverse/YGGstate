@@ -176,27 +176,27 @@ $peers = $memory->getByMethodCallback(
                   <thead>
                     <tr>
                       <th class="text-left">
-                        <a href="index.php?sort=address&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
+                        <a href="<?php echo WEBSITE_URL ?>/index.php?sort=address&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
                           <?php echo _('Address') ?>
                         </a>
                       </th>
                       <th class="text-center">
-                        <a href="index.php?sort=uptimeAvg&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
+                        <a href="<?php echo WEBSITE_URL ?>/index.php?sort=uptimeAvg&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
                             <?php echo _('Uptime,h') ?>
                         </a>
                       </th>
                       <th class="text-center">
-                        <a href="index.php?sort=sentSum&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
+                        <a href="<?php echo WEBSITE_URL ?>/index.php?sort=sentSum&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
                             <?php echo _('Sent,Mb') ?>
                         </a>
                       </th>
                       <th class="text-center">
-                        <a href="index.php?sort=receivedSum&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
+                        <a href="<?php echo WEBSITE_URL ?>/index.php?sort=receivedSum&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
                           <?php echo _('Received,Mb') ?>
                         </a>
                       </th>
                       <th class="text-center">
-                        <a href="index.php?sort=timeOnline&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
+                        <a href="<?php echo WEBSITE_URL ?>/index.php?sort=timeOnline&order=<?php echo $requestOrder == 'DESC' ? 'ASC' : 'DESC' ?>">
                           <?php echo _('Online') ?>
                         </a>
                       </th>
@@ -226,10 +226,10 @@ $peers = $memory->getByMethodCallback(
                     <tr>
                       <td colspan="5" class="text-left">
                         <?php if ($requestPage > 1) { ?>
-                          <a href="index.php?sort=<?php echo $requestSort ?>&page=<?php echo $requestPage - 1 ?>"><?php echo _('&larr;') ?></a>
+                          <a href="<?php echo WEBSITE_URL ?>/index.php?sort=<?php echo $requestSort ?>&page=<?php echo $requestPage - 1 ?>"><?php echo _('&larr;') ?></a>
                         <?php } ?>
                         <?php echo sprintf(_('page %s'), $requestPage) ?>
-                        <a href="index.php?sort=<?php echo $requestSort ?>&page=<?php echo $requestPage + 1 ?>"><?php echo _('&rarr;') ?></a>
+                        <a href="<?php echo WEBSITE_URL ?>/index.php?sort=<?php echo $requestSort ?>&page=<?php echo $requestPage + 1 ?>"><?php echo _('&rarr;') ?></a>
                       </td>
                     </tr>
                   </tfoot>
@@ -306,9 +306,9 @@ $peers = $memory->getByMethodCallback(
               </div>
               <h2>
                 <?php if ($requestCalendar == 'peers') { ?>
-                  <?php echo _('Peers') ?> | <a href="index.php?calendar=traffic"><?php echo _('Traffic') ?></a>
+                  <?php echo _('Peers') ?> | <a href="<?php echo WEBSITE_URL ?>/index.php?calendar=traffic"><?php echo _('Traffic') ?></a>
                 <?php } else { ?>
-                  <a href="index.php?calendar=peers"><?php echo _('Peers') ?></a> | <?php echo _('Traffic') ?>
+                  <a href="<?php echo WEBSITE_URL ?>/index.php?calendar=peers"><?php echo _('Peers') ?></a> | <?php echo _('Traffic') ?>
                 <?php } ?>
                 <div class="float-right">
                   <?php echo sprintf(_('%s - %s'), date('Y.m.d', strtotime(sprintf('%s-%s-%s 00:00', date('Y', $requestTime), date('n', $requestTime), 1), $requestTime)),
