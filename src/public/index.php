@@ -20,7 +20,7 @@ try {
 // Connect memcached
 try {
 
-  $memory = new Yggverse\Cache\Memory(MEMCACHED_HOST, MEMCACHED_PORT, MEMCACHED_NAMESPACE, MEMCACHED_TIMEOUT);
+  $memory = new Yggverse\Cache\Memory(MEMCACHED_HOST, MEMCACHED_PORT, MEMCACHED_NAMESPACE, MEMCACHED_TIMEOUT + time());
 
 } catch(Exception $e) {
 
@@ -82,6 +82,7 @@ foreach ($calendar->getNodes() as $day => $node) {
     break;
     case 'traffic':
 
+      // @TODO improve cache timing
       $timeFrom = strtotime(sprintf('%s-%s-%s 00:00', date('Y', $requestTime), date('n', $requestTime), $day));
       $timeTo   = strtotime('+1 day', strtotime(sprintf('%s-%s-%s 00:00', date('Y', $requestTime), date('n', $requestTime), $day)));
 
