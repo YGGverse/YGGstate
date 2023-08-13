@@ -49,6 +49,7 @@ class SphinxQL {
 
   private static function _match(string $keyword) : string {
 
+    $keyword = trim($keyword);
     $keyword = preg_replace('/[\:]+/', ':', $keyword);
 
     return sprintf(
