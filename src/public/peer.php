@@ -120,7 +120,7 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
         <div class="row">
           <a class="logo" href="<?php echo WEBSITE_URL ?>"><?php echo str_replace('YGG', '<span>YGG</span>', WEBSITE_NAME) ?></a>
           <form name="search" method="get" action="<?php echo WEBSITE_URL ?>/search.php">
-            <input type="text" name="search" value="" placeholder="<?php echo _('address, ip, port, keyword...') ?>" />
+            <input type="text" name="query" value="" placeholder="<?php echo _('address, ip, port, keyword...') ?>" />
             <button type="submit"><?php echo _('search') ?></button>
           </form>
         </div>
