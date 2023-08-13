@@ -48,9 +48,9 @@ foreach ($calendar->getNodes() as $day => $node) {
 
     case 'traffic':
 
+      $timeThis = strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), $day));
       $timeFrom = strtotime(sprintf('%s-%s-%s 00:00', date('Y', $requestTime), date('n', $requestTime), $day));
       $timeTo   = strtotime('+1 day', strtotime(sprintf('%s-%s-%s 00:00', date('Y', $requestTime), date('n', $requestTime), $day)));
-      $timeThis = strtotime('+1 day', strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), $day)));
 
       $dbPeerSessionSentSumByTimeUpdated = $memory->getByMethodCallback(
         $db, 'findPeerSessionSentSumByTimeUpdated', [$timeFrom, $timeTo, $requestPeerId], ($timeTo <= $timeThis ? 2592000 : MEMCACHED_TIMEOUT) + time()
@@ -67,9 +67,9 @@ foreach ($calendar->getNodes() as $day => $node) {
       // Add hourly stats
       for ($hour = 0; $hour < 24; $hour++) {
 
+        $timeThis = strtotime(sprintf('%s-%s-%s %s:00', date('Y'), date('n'), $day, $hour));
         $timeFrom = strtotime(sprintf('%s-%s-%s %s:00', date('Y', $requestTime), date('n', $requestTime), $day, $hour));
         $timeTo   = strtotime(sprintf('%s-%s-%s %s:00', date('Y', $requestTime), date('n', $requestTime), $day, $hour + 1));
-        $timeThis = strtotime(sprintf('%s-%s-%s %s:00', date('Y'), date('n'), $day, $hour + 1));
 
         $dbPeerSessionSentSumByTimeUpdated = $memory->getByMethodCallback(
           $db, 'findPeerSessionSentSumByTimeUpdated', [$timeFrom, $timeTo, $requestPeerId], ($timeTo <= $timeThis ? 2592000 : MEMCACHED_TIMEOUT) + time()
