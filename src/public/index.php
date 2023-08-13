@@ -354,8 +354,9 @@ $peers = $memory->getByMethodCallback(
           <div class="column width-50 width-tablet-100 width-mobile-100 text-right">
             <?php echo sprintf(_('server time: %s / %s'), time(), date('c')) ?>
             <br />
-            <?php echo sprintf(_('database since %s contains %s peers'), date('M, Y', $memory->getByMethodCallback($db, 'getPeerFirstByTimeAdded')->timeAdded),
-                                                                                      $memory->getByMethodCallback($db, 'getPeersTotal')) ?>
+            <?php echo sprintf(_('database since %s contains %s peers'),
+                               date('M, Y', $memory->getByMethodCallback($db, 'getPeerFirstByTimeAdded')->timeAdded),
+                               $memory->getByMethodCallback($db, 'getPeersTotal')) ?>
           </div>
         </div>
       </div>
