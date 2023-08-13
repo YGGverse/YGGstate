@@ -33,7 +33,7 @@ try {
 $requestPeerId   = isset($_GET['peerId']) ? (int) $_GET['peerId'] : 0;
 
 $requestTheme    = !empty($_GET['theme']) && in_array(['default'], $_GET['theme']) ? $_GET['theme'] : 'default';
-$requestTime     = !empty($_GET['time']) ? (int) $requestTime : time();
+$requestTime     = !empty($_GET['time']) ? (int) $_GET['time'] : time();
 $requestSort     = !empty($_GET['sort']) && in_array($_GET['sort'], ['peerConnection.timeAdded']) ? $_GET['sort'] : 'peerConnection.timeAdded';
 $requestOrder    = !empty($_GET['order']) && in_array($_GET['order'], ['ASC', 'DESC']) ? $_GET['order'] : 'DESC';
 $requestPage     = !empty($_GET['page']) && $_GET['page'] > 1 ? (int) $_GET['page'] : 1;
