@@ -64,7 +64,7 @@ $results = $sphinx->searchPeers($requestQuery,
     <title>
       <?php echo sprintf(_('%s - Search - %s'), htmlentities($requestQuery), WEBSITE_NAME) ?>
     </title>
-    <meta name="description" content="<?php echo _('Yggdrasil network analytics: peers, ip, traffic, timing, geo-location') ?>" />
+    <meta name="description" content="<?php echo _('Yggdrasil network search: peers, ip, traffic, timing, geo-location') ?>" />
     <meta name="keywords" content="yggdrasil, yggstate, yggverse, analytics, explorer, open-source, open-data, js-less" />
     <meta charset="UTF-8" />
   </head>
@@ -85,7 +85,7 @@ $results = $sphinx->searchPeers($requestQuery,
         <div class="row">
           <div class="column width-100">
             <div class="padding-4">
-              <h1><?php echo sprintf(_('Search results: %s'), htmlentities($requestQuery)) ?></h1>
+              <h1><?php echo sprintf(_('Search matches for %s'), htmlentities($requestQuery)) ?></h1>
             </div>
           </div>
         </div>
