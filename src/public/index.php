@@ -313,10 +313,10 @@ $peers = $memory->getByMethodCallback(
                 <?php } else { ?>
                   <a href="<?php echo WEBSITE_URL ?>/index.php?calendar=peers"><?php echo _('Peers') ?></a> | <?php echo _('Traffic') ?>
                 <?php } ?>
-                <div class="float-right">
+                <span class="float-right">
                   <?php echo sprintf(_('%s - %s'), date('Y.m.d', strtotime(sprintf('%s-%s-%s 00:00', date('Y', $requestTime), date('n', $requestTime), 1), $requestTime)),
                                                    date('Y.m.d', strtotime('+1 month', strtotime(sprintf('%s-%s-%s 00:00', date('Y', $requestTime), date('n', $requestTime), 1), $requestTime)))) ?>
-                </div>
+                </span>
               </h2>
               <div class="yggverse_graph_calendar__month">
                 <?php foreach ($calendar->getNodes() as $day => $node) { ?>
