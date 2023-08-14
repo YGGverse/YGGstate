@@ -1,0 +1,5 @@
+@reboot searchd
+@reboot indexer --all --rotate
+
+*/4 * * * * indexer peer --rotate
+*/5 * * * * /usr/bin/php /{PATH}/YGGstate/src/crontab/crawler.php >> /{PATH}/crawler.log 2>&1
