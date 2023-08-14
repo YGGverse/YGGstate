@@ -146,7 +146,9 @@ $results = $sphinx->searchPeers($requestQuery,
                         <?php } ?>
                       </td>
                       <td class="text-center">
-                        <?php if (false === strpos($result->peerremotescheme, $requestQuery)) { ?>
+                        <?php if (false === strpos(
+                          $result->peerremotescheme,
+                          Yggverse\Parser\Url::is($requestQuery) ? Yggverse\Parser\Url::parse($requestQuery)->host->scheme : $requestQuery)) { ?>
                             <span title="<?php echo $result->peerremotescheme ?>" class="font-size-22 cursor-default text-color-red">
                               &bull;
                             </span>
@@ -157,7 +159,9 @@ $results = $sphinx->searchPeers($requestQuery,
                         <?php } ?>
                       </td>
                       <td class="text-center">
-                        <?php if (false === strpos($result->peerremotehost, $requestQuery)) { ?>
+                        <?php if (false === strpos(
+                          $result->peerremotehost,
+                          Yggverse\Parser\Url::is($requestQuery) ? Yggverse\Parser\Url::parse($requestQuery)->host->name : $requestQuery)) { ?>
                             <span title="<?php echo $result->peerremotehost ?>" class="font-size-22 cursor-default text-color-red">
                               &bull;
                             </span>
@@ -168,7 +172,9 @@ $results = $sphinx->searchPeers($requestQuery,
                         <?php } ?>
                       </td>
                       <td class="text-center">
-                        <?php if (false === strpos($result->peerremoteport, $requestQuery)) { ?>
+                        <?php if (false === strpos(
+                          $result->peerremoteport,
+                          Yggverse\Parser\Url::is($requestQuery) ? (int) Yggverse\Parser\Url::parse($requestQuery)->host->port : $requestQuery)) { ?>
                             <span title="<?php echo $result->peerremoteport ?>" class="font-size-22 cursor-default text-color-red">
                               &bull;
                             </span>

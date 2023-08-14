@@ -50,17 +50,30 @@ class SphinxQL {
   private static function _match(string $keyword) : string {
 
     $keyword = trim($keyword);
-    $keyword = preg_replace('/[\:]+/', ':', $keyword);
+
+    // Parse url request
+    $peerAddress      = $keyword;
+    $peerRemoteScheme = $keyword;
+    $peerRemoteHost   = $keyword;
+    $peerRemotePort   = $keyword;
+
+    if ($url = Yggverse\Parser\Url::parse($keyword)) {
+
+      $peerAddress      = $url->host->name   ? $url->host->name   : $keyword;
+      $peerRemoteScheme = $url->host->scheme ? $url->host->scheme : $keyword;
+      $peerRemoteHost   = $url->host->name   ? $url->host->name   : $keyword;
+      $peerRemotePort   = $url->host->port   ? $url->host->port   : $keyword;
+    }
 
     return sprintf(
       '@peerAddress "%s" | @peerKey "%s" | @peerCoordinatePort "%s" | @peerCoordinateRoute "%s" | @peerRemoteScheme "%s" | @peerRemoteHost "%s" | @peerRemotePort "%s"',
-      preg_replace('/[^A-z0-9\:]/',   '', $keyword),
-      preg_replace('/[^A-z0-9]/',     '', $keyword),
-      preg_replace('/[^\d]/',         '', $keyword),
-      preg_replace('/[^\d]/',         '', $keyword),
-      preg_replace('/[^A-z]/',        '', $keyword),
-      preg_replace('/[^A-z0-9\.\:]/', '', $keyword),
-      preg_replace('/[^\d]/',         '', $keyword),
+      preg_replace('/[^A-z0-9\:\[\]]/',   '', $peerAddress),
+      preg_replace('/[^A-z0-9]/',         '', $keyword),
+      preg_replace('/[^\d]/',             '', $keyword),
+      preg_replace('/[^\d]/',             '', $keyword),
+      preg_replace('/[^A-z]/',            '', $peerRemoteScheme),
+      preg_replace('/[^A-z0-9\.\:\[\]]/', '', $peerRemoteHost),
+      preg_replace('/[^\d]/',             '', $peerRemotePort),
     );
   }
 }
