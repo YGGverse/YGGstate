@@ -80,11 +80,31 @@ $debug = [
           'insert' => 0,
         ],
       ],
+    ],
+    'geo' => [
+      'total' => [
+        'insert' => 0,
+      ],
+      'country' => [
+        'total' => [
+          'insert' => 0,
+        ],
+      ],
+      'city' => [
+        'total' => [
+          'insert' => 0,
+        ],
+      ],
+      'coordinate' => [
+        'total' => [
+          'insert' => 0,
+        ],
+      ],
     ]
   ]
 ];
 
-// Connect database
+// Connect DB
 try {
 
   $db = new MySQL(DB_HOST, DB_PORT, DB_NAME, DB_USERNAME, DB_PASSWORD);
@@ -96,8 +116,21 @@ try {
   exit;
 }
 
+// GeoIp2
+try {
+
+  $geoIp2Country = new GeoIp2\Database\Reader(GEOIP_LITE_2_COUNTRY_DB);
+  $geoIp2City    = new GeoIp2\Database\Reader(GEOIP_LITE_2_CITY_DB);
+
+} catch(Exception $e) {
+
+  var_dump($e);
+
+  exit;
+}
+
 // Collect connected peers
-if ($connectedPeers = \Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
+if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
 
   foreach ($connectedPeers as $connectedPeerAddress => $connectedPeerInfo) {
 
@@ -203,7 +236,7 @@ if ($connectedPeers = \Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
       }
 
       // Init peer remote
-      if ($connectedPeerRemoteUrl = \Yggverse\Parser\Url::parse($connectedPeerInfo->remote)) {
+      if ($connectedPeerRemoteUrl = Yggverse\Parser\Url::parse($connectedPeerInfo->remote)) {
 
         // Init peer scheme
         if ($dbPeerRemoteScheme = $db->findPeerRemoteScheme($connectedPeerRemoteUrl->host->scheme)) {
@@ -244,8 +277,90 @@ if ($connectedPeers = \Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
           }
         }
 
+        // Init geo data
 
+        /// Country
+        $countryIsoCode = $geoIp2Country->country($connectedPeerRemoteUrl->host->name)->country->isoCode;
+        $countryName    = $geoIp2Country->country($connectedPeerRemoteUrl->host->name)->country->name;
+
+        $dbGeoCountryId = null;
+
+        if (!empty($countryIsoCode) && !empty($countryName)) {
+
+          if ($dbGeoCountry = $db->findGeoCountryByIsoCode($countryIsoCode)) {
+
+            $dbGeoCountryId = $dbGeoCountry->geoCountryId;
+
+          } else {
+
+            if ($dbGeoCountryId = $db->addGeoCountry($countryIsoCode, $countryName)) {
+
+              $debug['yggdrasil']['geo']['country']['total']['insert']++;
+            }
+          }
+        }
+
+        /// City
+        $cityName = $geoIp2City->city($connectedPeerRemoteUrl->host->name)->city->name;
+
+        $dbGeoCityId = null;
+
+        if (!empty($cityName)) {
+
+          if ($dbGeoCity = $db->findGeoCityByName($cityName)) {
+
+            $dbGeoCityId = $dbGeoCity->geoCityId;
+
+          } else {
+
+            if ($dbGeoCityId = $db->addGeoCity($cityName)) {
+
+              $debug['yggdrasil']['geo']['city']['total']['insert']++;
+            }
+          }
+        }
+
+        /// Coordinate
+        $latitude  = $geoIp2City->city($connectedPeerRemoteUrl->host->name)->location->latitude;
+        $longitude = $geoIp2City->city($connectedPeerRemoteUrl->host->name)->location->longitude;
+
+        $dbGeoCoordinateId = null;
+
+        if (!empty($latitude) && !empty($longitude)) {
+
+          if ($dbGeoCoordinate = $db->findGeoCoordinate($geoIp2City->city($connectedPeerRemoteUrl->host->name)->location->latitude,
+                                                        $geoIp2City->city($connectedPeerRemoteUrl->host->name)->location->longitude)) {
+
+            $dbGeoCoordinateId = $dbGeoCoordinate->geoCoordinateId;
+
+          } else {
+
+            if ($dbGeoCoordinateId = $db->addGeoCoordinate($geoIp2City->city($connectedPeerRemoteUrl->host->name)->location->latitude,
+                                                           $geoIp2City->city($connectedPeerRemoteUrl->host->name)->location->longitude)) {
+
+              $debug['yggdrasil']['geo']['coordinate']['total']['insert']++;
+            }
+          }
+        }
+
+        /// Geo
+        $dbGeoId = null;
+
+        if ($dbGeo = $db->findGeo($dbGeoCountryId, $dbGeoCityId, $dbGeoCoordinateId)) {
+
+          $dbGeoId = $dbGeo->geoId;
+
+        } else {
+
+          if ($dbGeoId = $db->addGeo($dbGeoCountryId, $dbGeoCityId, $dbGeoCoordinateId)) {
+
+            $debug['yggdrasil']['geo']['total']['insert']++;
+          }
+        }
+
+        // Init peer remote
         if ($dbPeerRemote = $db->findPeerRemote($dbPeerId,
+                                                $dbGeoId,
                                                 $dbPeerRemoteSchemeId,
                                                 $dbPeerRemoteHostId,
                                                 $dbPeerRemotePortId)) {
@@ -255,6 +370,7 @@ if ($connectedPeers = \Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
         } else {
 
           if ($dbPeerRemoteId = $db->addPeerRemote($dbPeerId,
+                                                   $dbGeoId,
                                                    $dbPeerRemoteSchemeId,
                                                    $dbPeerRemoteHostId,
                                                    $dbPeerRemotePortId,
@@ -266,6 +382,8 @@ if ($connectedPeers = \Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
 
       // If something went wrong with URL parse, skip next operations for this peer
       } else {
+
+        $db->rollBack();
 
         continue;
       }

@@ -74,7 +74,7 @@ $results = $sphinx->searchPeers($requestQuery,
         <div class="row">
           <a class="logo" href="<?php echo WEBSITE_URL ?>"><?php echo str_replace('YGG', '<span>YGG</span>', WEBSITE_NAME) ?></a>
           <form name="search" method="get" action="<?php echo WEBSITE_URL ?>/search.php">
-            <input type="text" name="query" value="<?php echo htmlentities($requestQuery) ?>" placeholder="<?php echo _('address, ip, port, keyword...') ?>" />
+            <input type="text" name="query" value="<?php echo htmlentities($requestQuery) ?>" placeholder="<?php echo _('address, ip, geo, port, keyword...') ?>" />
             <button type="submit"><?php echo _('search') ?></button>
           </form>
         </div>
@@ -102,6 +102,8 @@ $results = $sphinx->searchPeers($requestQuery,
                     <th class="text-center"><?php echo _('Remote scheme') ?></th>
                     <th class="text-center"><?php echo _('Remote host') ?></th>
                     <th class="text-center"><?php echo _('Remote port') ?></th>
+                    <th class="text-center"><?php echo _('Country') ?></th>
+                    <th class="text-center"><?php echo _('City') ?></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -184,13 +186,36 @@ $results = $sphinx->searchPeers($requestQuery,
                             </span>
                         <?php } ?>
                       </td>
+                      <td class="text-center">
+                        <?php if (false === stripos($result->geocountryname, $requestQuery) &&
+                                  false === stripos($result->geocountryisocode, $requestQuery)) { ?>
+                            <span title="<?php echo $result->geocountryname ?> <?php echo $result->geocountryisocode ?>" class="font-size-22 cursor-default text-color-red">
+                              &bull;
+                            </span>
+                          <?php } else { ?>
+                            <span title="<?php echo $result->geocountryname ?> <?php echo $result->geocountryisocode ?>" class="font-size-22 cursor-default text-color-green">
+                              &bull;
+                            </span>
+                        <?php } ?>
+                      </td>
+                      <td class="text-center">
+                        <?php if (false === stripos($result->geocityname, $requestQuery)) { ?>
+                            <span title="<?php echo $result->geocityname ?>" class="font-size-22 cursor-default text-color-red">
+                              &bull;
+                            </span>
+                          <?php } else { ?>
+                            <span title="<?php echo $result->geocityname ?>" class="font-size-22 cursor-default text-color-green">
+                              &bull;
+                            </span>
+                        <?php } ?>
+                      </td>
                     </tr>
                   <?php } ?>
                 </tbody>
                 <?php if ($total >= WEBSITE_PEER_REMOTE_PAGINATION_LIMIT) { ?>
                   <tfoot>
                     <tr>
-                      <td colspan="5" class="text-left">
+                      <td colspan="9" class="text-left">
                         <?php if ($requestPage > 1) { ?>
                           <a href="search.php?query=<?php echo urlencode($requestQuery) ?>&page=<?php echo $requestPage - 1 ?>"><?php echo _('&larr;') ?></a>
                         <?php } ?>

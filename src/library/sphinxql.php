@@ -66,7 +66,7 @@ class SphinxQL {
     }
 
     return sprintf(
-      '@peerAddress "%s" | @peerKey "%s" | @peerCoordinatePort "%s" | @peerCoordinateRoute "%s" | @peerRemoteScheme "%s" | @peerRemoteHost "%s" | @peerRemotePort "%s"',
+      '@peerAddress "%s" | @peerKey "%s" | @peerCoordinatePort "%s" | @peerCoordinateRoute "%s" | @peerRemoteScheme "%s" | @peerRemoteHost "%s" | @peerRemotePort "%s" | @geoCountryIsoCode "%s" | @geoCountryName "%s" | @geoCityName "%s"',
       preg_replace('/[^A-z0-9\:\[\]]/',   '', $peerAddress),
       preg_replace('/[^A-z0-9]/',         '', $keyword),
       preg_replace('/[^\d]/',             '', $keyword),
@@ -74,6 +74,9 @@ class SphinxQL {
       preg_replace('/[^A-z]/',            '', $peerRemoteScheme),
       preg_replace('/[^A-z0-9\.\:\[\]]/', '', $peerRemoteHost),
       preg_replace('/[^\d]/',             '', $peerRemotePort),
+      preg_replace('/[^A-z]/',            '', $keyword),
+      preg_replace('/[^A-z]/',            '', $keyword),
+      preg_replace('/[^A-z]/',            '', $keyword),
     );
   }
 }

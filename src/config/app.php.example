@@ -58,6 +58,10 @@ define('MEMCACHED_HOST', 'localhost');
 define('MEMCACHED_NAMESPACE', 'yggstate');
 define('MEMCACHED_TIMEOUT', 60 * 5);
 
+// GeoIp2 integration by https://www.maxmind.com
+define('GEOIP_LITE_2_COUNTRY_DB', __DIR__ . '/../../storage/GeoLite2/GeoLite2-Country.mmdb');
+define('GEOIP_LITE_2_CITY_DB', __DIR__ . '/../../storage/GeoLite2/GeoLite2-City.mmdb');
+
 // Webapp
 define('WEBSITE_URL', '');
 define('WEBSITE_NAME', 'YGGstate');

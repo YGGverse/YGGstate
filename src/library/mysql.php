@@ -114,29 +114,127 @@ class MySQL {
     return $query->fetchAll();
   }
 
+  // Geo
+  public function findGeo(mixed $geoCountryId, mixed $geoCityId, mixed $geoCoordinateId) { // int|null
+
+    $this->_debug->query->select->total++;
+
+    // @TODO
+    // UNIQUE keys does not applying for the NULL values,
+    // another problem that MySQL return no results for = NULL condition
+    // if someone have better solution, feel free to PR this issue https://github.com/YGGverse/YGGstate/pulls
+    $query = $this->_db->query("SELECT * FROM  `geo`
+                                         WHERE `geoCountryId`    " . (empty($geoCountryId) ?    " IS NULL " : " = " . (int) $geoCountryId   ) . "
+                                         AND   `geoCityId`       " . (empty($geoCityId) ?       " IS NULL " : " = " . (int) $geoCityId      ) . "
+                                         AND   `geoCoordinateId` " . (empty($geoCoordinateId) ? " IS NULL " : " = " . (int) $geoCoordinateId) . "
+                                         LIMIT 1");
+
+    return $query->fetch();
+  }
+
+  public function addGeo(mixed $geoCountryId, mixed $geoCityId, mixed $geoCoordinateId) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `geo` SET `geoCountryId`    = ?,
+                                                        `geoCityId`       = ?,
+                                                        `geoCoordinateId` = ?');
+
+    $query->execute([$geoCountryId, $geoCityId, $geoCoordinateId]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function findGeoCountryByIsoCode(string $isoCode) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `geoCountry` WHERE `isoCode` = ? LIMIT 1');
+
+    $query->execute([$isoCode]);
+
+    return $query->fetch();
+  }
+
+  public function addGeoCountry(string $isoCode, string $name) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `geoCountry` SET `isoCode` = ?, `name` = ?');
+
+    $query->execute([$isoCode, $name]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function findGeoCityByName(string $name) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `geoCity` WHERE `name` = ? LIMIT 1');
+
+    $query->execute([$name]);
+
+    return $query->fetch();
+  }
+
+  public function addGeoCity(string $name) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `geoCity` SET `name` = ?');
+
+    $query->execute([$name]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function findGeoCoordinate(float $latitude, float $longitude) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `geoCoordinate` WHERE `point` = POINT(?, ?) LIMIT 1');
+
+    $query->execute([$latitude, $longitude]);
+
+    return $query->fetch();
+  }
+
+  public function addGeoCoordinate(float $latitude, float $longitude) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `geoCoordinate` SET `point` = POINT(?, ?)');
+
+    $query->execute([$latitude, $longitude]);
+
+    return $this->_db->lastInsertId();
+  }
+
   // Peer remote
-  public function addPeerRemote(int $peerId, int $peerRemoteSchemeId, int $peerRemoteHostId, int $peerRemotePortId, int $timeAdded) {
+  public function addPeerRemote(int $peerId, int $geoId, int $peerRemoteSchemeId, int $peerRemoteHostId, int $peerRemotePortId, int $timeAdded) {
 
     $this->_debug->query->insert->total++;
 
     $query = $this->_db->prepare('INSERT INTO `peerRemote` SET  `peerId`             = ?,
+                                                                `geoId`              = ?,
                                                                 `peerRemoteSchemeId` = ?,
                                                                 `peerRemoteHostId`   = ?,
                                                                 `peerRemotePortId`   = ?,
                                                                 `timeAdded`          = ?');
 
-    $query->execute([$peerId, $peerRemoteSchemeId, $peerRemoteHostId, $peerRemotePortId, $timeAdded]);
+    $query->execute([$peerId, $geoId, $peerRemoteSchemeId, $peerRemoteHostId, $peerRemotePortId, $timeAdded]);
 
     return $this->_db->lastInsertId();
   }
 
-  public function findPeerRemote(int $peerId, int $peerRemoteSchemeId, int $peerRemoteHostId, int $peerRemotePortId) {
+  public function findPeerRemote(int $peerId, int $geoId, int $peerRemoteSchemeId, int $peerRemoteHostId, int $peerRemotePortId) {
 
     $this->_debug->query->select->total++;
 
-    $query = $this->_db->prepare('SELECT * FROM `peerRemote` WHERE `peerId` = ? AND `peerRemoteSchemeId` = ? AND `peerRemoteHostId` = ? AND `peerRemotePortId` = ? LIMIT 1');
+    $query = $this->_db->prepare('SELECT * FROM `peerRemote` WHERE `peerId` = ? AND `geoId` = ? AND `peerRemoteSchemeId` = ? AND `peerRemoteHostId` = ? AND `peerRemotePortId` = ? LIMIT 1');
 
-    $query->execute([$peerId, $peerRemoteSchemeId, $peerRemoteHostId, $peerRemotePortId]);
+    $query->execute([$peerId, $geoId, $peerRemoteSchemeId, $peerRemoteHostId, $peerRemotePortId]);
 
     return $query->fetch();
   }
@@ -189,9 +287,21 @@ class MySQL {
 
     $this->_debug->query->select->total++;
 
-    $query = $this->_db->prepare('SELECT * FROM `peerRemotePort` WHERE `name` = ? LIMIT 1');
+    // @TODO
+    // UNIQUE keys does not applying for the NULL values,
+    // another problem that MySQL return no results for = NULL condition
+    // if someone have better solution, feel free to PR this issue https://github.com/YGGverse/YGGstate/pulls
+    if (empty($name)) {
 
-    $query->execute([$name]);
+      $query = $this->_db->query('SELECT * FROM `peerRemotePort` WHERE `name` IS NULL LIMIT 1');
+
+    } else {
+
+      $query = $this->_db->prepare('SELECT * FROM `peerRemotePort` WHERE `name` = ? LIMIT 1');
+
+      $query->execute([$name]);
+    }
+
 
     return $query->fetch();
   }
@@ -517,6 +627,13 @@ class MySQL {
 
     `peerCoordinate`.`port` AS `connectionPort`,
 
+    (
+      SELECT GROUP_CONCAT(`port` SEPARATOR ' &rarr; ')
+      FROM `peerCoordinateRoute`
+      WHERE `peerCoordinateRoute`.`peerCoordinateId` = `peerConnection`.`peerCoordinateId`
+      ORDER BY `peerCoordinateRoute`.`level` ASC
+    ) AS `route`,
+
     CONCAT
     (
       IF  (`peerRemotePort`.`name` IS NOT NULL,
@@ -525,12 +642,9 @@ class MySQL {
           )
     ) AS `remote`,
 
-    (
-      SELECT GROUP_CONCAT(`port` SEPARATOR ' &rarr; ')
-      FROM `peerCoordinateRoute`
-      WHERE `peerCoordinateRoute`.`peerCoordinateId` = `peerConnection`.`peerCoordinateId`
-      ORDER BY `peerCoordinateRoute`.`level` ASC
-    ) AS `route`
+    `geoCountry`.`isoCode` AS `geoCountryIsoCode`,
+    `geoCountry`.`name` `geoCountryName`,
+    `geoCity`.`name` AS `geoCityName`
 
     FROM `peerConnection`
 
@@ -543,6 +657,10 @@ class MySQL {
     JOIN `peerRemotePort` ON (`peerRemotePort`.`peerRemotePortId` = `peerRemote`.`peerRemotePortId`)
 
     JOIN `peer` ON (`peer`.`peerId` = `peerRemote`.`peerId`)
+
+    LEFT JOIN `geo` ON (`geo`.`geoId` = `peerRemote`.`geoId`)
+    LEFT JOIN `geoCountry` ON (`geoCountry`.`geoCountryId` = `geo`.`geoCountryId`)
+    LEFT JOIN `geoCity` ON (`geoCity`.`geoCityId` = `geo`.`geoCityId`)
 
     WHERE `peerRemote`.`peerId` = :peerId
 

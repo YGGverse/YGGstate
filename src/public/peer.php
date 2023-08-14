@@ -135,7 +135,7 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
         <div class="row">
           <a class="logo" href="<?php echo WEBSITE_URL ?>"><?php echo str_replace('YGG', '<span>YGG</span>', WEBSITE_NAME) ?></a>
           <form name="search" method="get" action="<?php echo WEBSITE_URL ?>/search.php">
-            <input type="text" name="query" value="" placeholder="<?php echo _('address, ip, port, keyword...') ?>" />
+            <input type="text" name="query" value="" placeholder="<?php echo _('address, ip, geo, port, keyword...') ?>" />
             <button type="submit"><?php echo _('search') ?></button>
           </form>
         </div>
@@ -174,6 +174,9 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
                           <?php echo _('Coordinate') ?>
                         </th>
                         <th class="text-center">
+                          <?php echo _('Geo') ?>
+                        </th>
+                        <th class="text-center">
                           <?php echo _('Online') ?>
                         </th>
                       </tr>
@@ -186,6 +189,11 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
                           <td class="text-center"><?php echo $peerRemoteConnection->connectionPort ?></td>
                           <td class="text-left"><?php echo $peerRemoteConnection->route ?></td>
                           <td class="text-center">
+                            <span class="cursor-default" title="<?php echo $peerRemoteConnection->geoCityName ?> <?php echo $peerRemoteConnection->geoCountryName ?>">
+                              <?php echo $peerRemoteConnection->geoCountryIsoCode ?>
+                            <span>
+                          </td>
+                          <td class="text-center">
                             <span class="font-size-22 cursor-default <?php echo $i == 0 && $peerRemoteConnection->timeOnline > time() - WEBSITE_PEER_REMOTE_TIME_ONLINE_TIMEOUT ? 'text-color-green' : 'text-color-red' ?>">
                               &bull;
                             </span>
@@ -196,7 +204,7 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
                     <?php if ($i >= WEBSITE_PEER_REMOTE_PAGINATION_LIMIT) { ?>
                     <tfoot>
                       <tr>
-                        <td colspan="5" class="text-left">
+                        <td colspan="6" class="text-left">
                           <?php if ($requestPage > 1) { ?>
                             <a href="<?php echo WEBSITE_URL ?>/peer.php?peerId=<?php echo $requestPeerId ?>&sort=<?php echo $requestSort ?>&page=<?php echo $requestPage - 1 ?>"><?php echo _('&larr;') ?></a>
                           <?php } ?>

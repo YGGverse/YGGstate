@@ -2,6 +2,7 @@
 /vendor/
 
 /database/yggstate.mwb.bak
+/storage/GeoLite2/*
 
 /src/config/app.php
 
