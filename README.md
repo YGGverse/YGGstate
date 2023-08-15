@@ -37,8 +37,8 @@ sphinxsearch
 * The web root dir is `/src/public`
 * Deploy the database using [MySQL Workbench](https://www.mysql.com/products/workbench) project presented in the `/database` folder
 * Install [Sphinx Search Server](https://sphinxsearch.com)
-* Configuration examples presented at `/config` folder
 * Install [GeoLite2 DB](https://www.maxmind.com) to `/src/storage` or provide alternative path in configuration file
+* Configuration examples presented at `/config` folder
 * Set up the `/src/crontab` by following [example](https://github.com/YGGverse/YGGstate/blob/main/%20example/environment%20/crontab)
 
 #### Contribute
