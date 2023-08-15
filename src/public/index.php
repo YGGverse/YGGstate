@@ -171,8 +171,9 @@ $peers = $memory->getByMethodCallback(
     <title>
       <?php echo sprintf(_('%s - Yggdrasil network explorer since %s'), WEBSITE_NAME, date('Y', $memory->getByMethodCallback($db, 'getPeerFirstByTimeAdded')->timeAdded)) ?>
     </title>
-    <meta name="description" content="<?php echo _('Yggdrasil network analytics: peers, ip, traffic, timing, geo-location') ?>" />
-    <meta name="keywords" content="yggdrasil, yggstate, yggverse, analytics, explorer, open-source, open-data, js-less" />
+    <meta name="description" content="<?php echo _('Yggdrasil network analytics: peer info, ip, traffic, timing, routing, geo-location') ?>" />
+    <meta name="keywords" content="yggdrasil, yggstate, yggverse, analytics, explorer, search engine, crawler, ip info, geo location, node city, node country, traffic stats, ports, node coordinates, connection time, routes, open-source, js-less" />
+    <meta name="author" content="YGGverse" />
     <meta charset="UTF-8" />
   </head>
   <body>

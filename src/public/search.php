@@ -64,8 +64,9 @@ $results = $sphinx->searchPeers($requestQuery,
     <title>
       <?php echo sprintf(_('%s - Search - %s'), htmlentities($requestQuery), WEBSITE_NAME) ?>
     </title>
-    <meta name="description" content="<?php echo _('Yggdrasil network search: peers, ip, traffic, timing, geo-location') ?>" />
-    <meta name="keywords" content="yggdrasil, yggstate, yggverse, analytics, explorer, open-source, open-data, js-less" />
+    <meta name="description" content="<?php echo _('Yggdrasil network search: peer info, ip, traffic, timing, routing, geo-location') ?>" />
+    <meta name="keywords" content="yggdrasil, yggstate, yggverse, analytics, explorer, search engine, crawler, ip info, geo location, node city, node country, traffic stats, ports, node coordinates, connection time, routes, open-source, js-less" />
+    <meta name="author" content="YGGverse" />
     <meta charset="UTF-8" />
   </head>
   <body>
