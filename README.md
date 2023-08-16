@@ -57,12 +57,17 @@ git checkout -b my-pr-branch-name
 #### License
 * Engine sources [MIT License](https://github.com/YGGverse/YGGstate/blob/main/LICENSE)
 
+#### Feedback
+
+Feel free to [share](https://github.com/YGGverse/YGGstate/issues) your ideas and bug reports!
+
+#### Community
+
+* [Mastodon](https://mastodon.social/@YGGverse)
+* [[matrix]](https://matrix.to/#/#YGGstate:matrix.org)
+
 #### See also
 
 * [YGGo - YGGo! Distributed Web Search Engine ](https://github.com/YGGverse/YGGo)
 * [YGGwave ~ The Radio Catalog](https://github.com/YGGverse/YGGwave)
 * [PHP library to build JS-less graphs](https://github.com/YGGverse/graph-php)
-
-#### Feedback
-
-Feel free to [share](https://github.com/YGGverse/YGGstate/issues) your ideas and bug reports!
