@@ -44,6 +44,16 @@
   color: #5785b7;
 }
 
+.label {
+  padding: 4px 8px;
+  border-radius: 3px;
+}
+
+.label-green {
+  color: #277b1b;
+  border: 1px #92bc8c solid;
+}
+
 .line-height-26 {
   line-height: 26px;
 }
@@ -60,6 +70,18 @@
 
 .cursor-default {
   cursor: default;
+}
+
+.cursor-help {
+  cursor: help;
+}
+
+.font-width-normal {
+  font-weight: normal;
+}
+
+.font-size-12 {
+  font-size: 12px;
 }
 
 .font-size-22 {

@@ -224,7 +224,15 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
           <div class="row">
             <div class="column width-100">
               <div class="padding-4">
-                <h1><?php echo sprintf(_('Peer %s'), $peerInfo->address) ?></h1>
+                <h1>
+                  <?php echo sprintf(_('Peer %s'), $peerInfo->address) ?>
+                  <?php if (!empty($_SERVER['REMOTE_ADDR']) && $peerInfo->address == $_SERVER['REMOTE_ADDR']) { ?>
+                    <span class="label label-green font-size-12 font-width-normal cursor-default" title="<?php echo _('you have connected from this peer') ?>">
+                      <?php echo _('this connection') ?>
+                    </span>
+                  <?php } ?>
+                </h1>
+
               </div>
             </div>
           </div>
