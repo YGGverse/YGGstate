@@ -38,6 +38,7 @@ $requestSort     = isset($_GET['sort']) && in_array($_GET['sort'], ['peerConnect
 $requestOrder    = isset($_GET['order']) && in_array($_GET['order'], ['ASC', 'DESC']) ? $_GET['order'] : 'DESC';
 $requestPage     = isset($_GET['page']) && $_GET['page'] > 1 ? (int) $_GET['page'] : 1;
 $requestCalendar = isset($_GET['calendar']) && in_array($_GET['calendar'], ['traffic']) ? $_GET['calendar'] : 'traffic';
+$requestPort     = isset($_POST['port']) && 5 > strlen($_POST['port']) && $_POST['port'] > 0 ? (int) $_POST['port'] : false;
 
 // App controller begin
 $calendar = new Yggverse\Graph\Calendar\Month($requestTime);
@@ -114,6 +115,77 @@ $peerRemoteConnections = $memory->getByMethodCallback(
 
 $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
 
+// Port check
+$responsePort = (object)
+[
+  'status'  => false,
+  'message' => null,
+];
+
+if ($requestPort) {
+
+  if ($peerInfo) {
+
+    // Check requests quota
+    $lastPeerPortStatus = $db->findLastPeerPortStatusByPeerId($requestPeerId);
+
+    if ($lastPeerPortStatus &&
+        $lastPeerPortStatus->timeAdded > time() - WEBSITE_PEER_PORT_CHECK_TIMEOUT) {
+
+      $responsePort = (object)
+      [
+        'status'  => false,
+        'message' => sprintf(_('request quota %s minutes'), WEBSITE_PEER_PORT_CHECK_TIMEOUT / 60),
+      ];
+
+    } else {
+
+      // Get port connection
+      $connection = @fsockopen(
+        sprintf('[%s]', $peerInfo->address),
+        $requestPort,
+        $error_code,
+        $error_message,
+        5
+      );
+
+      if (is_resource($connection)) {
+
+        $responsePort = (object)
+        [
+          'status'  => true,
+          'message' => sprintf(_('%s port open'), $requestPort),
+        ];
+
+        fclose($connection);
+
+      } else {
+
+        $responsePort = (object)
+        [
+          'status'  => false,
+          'message' => sprintf(_('%s port closed'), $requestPort),
+        ];
+      }
+
+      // Init port
+      if ($peerPort = $db->findPeerPortByValue($requestPeerId, $requestPort)) {
+
+        $peerPortId = $peerPort->peerPortId;
+
+      } else {
+
+        $peerPortId = $db->addPeerPort($requestPeerId, $requestPort);
+      }
+
+      // Save connection result
+      $db->addPeerPortStatus($peerPortId, $responsePort->status, time());
+    }
+  }
+}
+
+$peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
+
 ?>
 
 <!DOCTYPE html>
@@ -123,10 +195,14 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
     <link rel="stylesheet" type="text/css" href="<?php echo WEBSITE_URL ?>/assets/theme/<?php echo $requestTheme ?>/css/framework.css?<?php echo time() ?>" />
     <link rel="stylesheet" type="text/css" href="<?php echo WEBSITE_URL ?>/assets/theme/<?php echo $requestTheme ?>/css/yggverse/graph/calendar/month.css?<?php echo time() ?>" />
     <title>
-      <?php echo sprintf(_('Peer %s - %s'), $peerInfo->address, WEBSITE_NAME) ?>
+      <?php if ($peerInfo) { ?>
+        <?php echo sprintf(_('Peer %s - %s'), $peerInfo->address, WEBSITE_NAME) ?>
+      <?php } else { ?>
+        <?php echo _('Not found') ?>
+      <?php } ?>
     </title>
-    <meta name="description" content="<?php echo _('Yggdrasil peer info analytics: ip, traffic, timing, routing, geo-location') ?>" />
-    <meta name="keywords" content="yggdrasil, yggstate, yggverse, analytics, explorer, search engine, crawler, ip info, geo location, node city, node country, traffic stats, ports, node coordinates, connection time, routes, open-source, js-less" />
+    <meta name="description" content="<?php echo _('Yggdrasil peer info analytics: ip, traffic, timing, routing, geo-location, port status') ?>" />
+    <meta name="keywords" content="yggdrasil, yggstate, yggverse, analytics, explorer, search engine, crawler, ip info, geo location, node city, node country, traffic stats, port open status, node coordinates, connection time, routes, open-source, js-less" />
     <meta name="author" content="YGGverse" />
     <meta charset="UTF-8" />
   </head>
@@ -227,7 +303,7 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
             </div>
             <div class="column width-50 width-tablet-100 width-mobile-100">
               <div class="padding-4">
-              <h2><?php echo _('Peer info') ?></h2>
+                <h2><?php echo _('Peer info') ?></h2>
                 <div class="row padding-0">
                   <div class="column width-100">
                     <table class="bordered width-100">
@@ -309,6 +385,61 @@ $peerInfo = $memory->getByMethodCallback($db, 'getPeerInfo', [$requestPeerId]);
                         </tbody>
                       </table>
                     </div>
+                  </div>
+                </div>
+                <div class="row padding-0">
+                  <div class="column width-50">
+                    <table class="bordered width-100">
+                      <thead>
+                        <tr>
+                          <th  class="text-left" colspan="3"><?php echo _('Port') ?></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <?php if ($peerPortStatuses) { ?>
+                          <?php foreach ($peerPortStatuses as $peerPortStatus) { ?>
+                            <tr>
+                              <td class="text-left"><?php echo $peerPortStatus->port ?></td>
+                              <td class="text-left"><?php echo date('Y-m-d H:s:i', $peerPortStatus->timeAdded) ?></td>
+                              <td class="text-center padding-0">
+                              <?php if ($peerPortStatus->status) { ?>
+                                <span class="font-size-22 cursor-default text-color-green" title="<?php echo _('open') ?>">
+                                  &bull;
+                                </span>
+                              </td>
+                              <?php } else { ?>
+                                <span class="font-size-22 cursor-default text-color-red" title="<?php echo _('closed') ?>">
+                                  &bull;
+                                </span>
+                              <?php } ?>
+                            </tr>
+                          <?php } ?>
+                        <?php } else { ?>
+                          <tr>
+                            <td colspan="3"><?php echo _('no records found') ?></td>
+                          </tr>
+                        <?php } ?>
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td class="text-left padding-x-0 padding-y-8" colspan="3">
+                            <?php if ($responsePort->status) { ?>
+                              <span class="padding-x-4 line-height-26 text-color-green">
+                                <?php echo $responsePort->message ?>
+                              </span>
+                            <?php } else { ?>
+                              <span class="padding-x-4 line-height-26 text-color-red">
+                                <?php echo $responsePort->message ?>
+                              </span>
+                            <?php } ?>
+                            <form name="port" method="post" action="<?php echo WEBSITE_URL ?>/peer.php?peerId=<?php echo $requestPeerId ?>">
+                              <input class="text-center" type="text" name="port" value="<?php echo $requestPort ?>" maxlength="5" size="5" placeholder="<?php echo _('port') ?>" />
+                              <button type="submit"><?php echo _('check') ?></button>
+                            </form>
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
                   </div>
                 </div>
                 <h2>

@@ -114,6 +114,84 @@ class MySQL {
     return $query->fetchAll();
   }
 
+  // Port
+  public function findPeerPortByValue(int $peerId, int $value) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT * FROM `peerPort` WHERE `peerId` = ? AND `value` = ? LIMIT 1');
+
+    $query->execute([$peerId, $value]);
+
+    return $query->fetch();
+  }
+
+  public function addPeerPort(int $peerId, int $value) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `peerPort` SET `peerId` = ?, `value` = ?');
+
+    $query->execute([$peerId, $value]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function addPeerPortStatus(int $peerPortId, bool $value, int $timeAdded) {
+
+    $this->_debug->query->insert->total++;
+
+    $query = $this->_db->prepare('INSERT INTO `peerPortStatus` SET `peerPortId` = ?, `value` = ?, `timeAdded` = ?');
+
+    $query->execute([$peerPortId, $value ? "1" : "0", $timeAdded]);
+
+    return $this->_db->lastInsertId();
+  }
+
+  public function findLastPeerPortStatusesByPeerId(int $peerId, int $limit = 5) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT  `peerPort`.`value` AS `port`,
+                                          `peerPortStatus`.`value` AS `status`,
+                                          `peerPortStatus`.`timeAdded`
+
+                                          FROM `peerPort`
+                                          JOIN `peerPortStatus` ON (`peerPortStatus`.`peerPortId` = `peerPort`.`peerPortId`)
+
+                                          WHERE `peerPort`.`peerId` = ?
+
+                                          ORDER BY `peerPortStatus`.`timeAdded` DESC
+
+                                          LIMIT ' . (int) $limit);
+
+    $query->execute([$peerId]);
+
+    return $query->fetchAll();
+  }
+
+  public function findLastPeerPortStatusByPeerId(int $peerId) {
+
+    $this->_debug->query->select->total++;
+
+    $query = $this->_db->prepare('SELECT  `peerPort`.`value` AS `port`,
+                                          `peerPortStatus`.`value` AS `status`,
+                                          `peerPortStatus`.`timeAdded`
+
+                                          FROM `peerPort`
+                                          JOIN `peerPortStatus` ON (`peerPortStatus`.`peerPortId` = `peerPort`.`peerPortId`)
+
+                                          WHERE `peerPort`.`peerId` = ?
+
+                                          ORDER BY `peerPortStatus`.`timeAdded` DESC
+
+                                          LIMIT 1');
+
+    $query->execute([$peerId]);
+
+    return $query->fetch();
+  }
+
   // Geo
   public function findGeo(mixed $geoCountryId, mixed $geoCityId, mixed $geoCoordinateId) { // int|null
 

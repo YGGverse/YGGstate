@@ -44,6 +44,10 @@
   color: #5785b7;
 }
 
+.line-height-26 {
+  line-height: 26px;
+}
+
 /*
 .background-color-green {
   background-color: #e9f9e7;
@@ -66,8 +70,23 @@
   padding: 0;
 }
 
+.padding-x-0 {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 .padding-4 {
   padding: 4px;
+}
+
+.padding-x-4 {
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+.padding-y-8 {
+  padding-top: 8px;
+  padding-bottom: 8px;
 }
 
 .margin-y-8 {

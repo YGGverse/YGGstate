@@ -72,6 +72,10 @@ tbody tr:hover {
   background: #f2f2f2;
 }
 
+tfoot {
+  border-top: 1px #f2f2f2 solid;
+}
+
 a, a:hover, a:active, a:visited {
   color: #5785b7;
   text-decoration: none;
@@ -89,9 +93,16 @@ form > input::placeholder {
   color: #333;
 }
 
-form > input[type="text"] {
-  padding: 7px 4px;
+form > input[name="query"] {
+  padding: 6px 4px;
   min-width: 260px;
+  border: 1px #f2f2f2 solid;
+}
+
+form > input[name="port"] {
+  padding: 6px 4px;
+  min-width: 64px;
+  border: 1px #f2f2f2 solid;
 }
 
 form > button {
