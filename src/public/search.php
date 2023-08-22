@@ -46,6 +46,15 @@ $requestQuery = !empty($_GET['query']) ? trim(html_entity_decode(urldecode($_GET
 $requestTheme = !empty($_GET['theme']) && in_array(['default'], $_GET['theme']) ? $_GET['theme'] : 'default';
 $requestPage  = !empty($_GET['page']) && $_GET['page'] > 1 ? (int) $_GET['page'] : 1;
 
+// Redirect visitor to it peer page on empty search request
+if ($requestQuery == '*' && !empty($_SERVER['REMOTE_ADDR'])) {
+
+  if ($peer = $db->findPeer($_SERVER['REMOTE_ADDR'])) {
+
+    header(sprintf('Location: %s/peer.php?peerId=%s', WEBSITE_URL, $peer->peerId));
+  }
+}
+
 // Search request
 $total   = $sphinx->searchPeersTotal($requestQuery);
 $results = $sphinx->searchPeers($requestQuery,
