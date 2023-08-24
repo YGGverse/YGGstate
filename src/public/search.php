@@ -235,10 +235,10 @@ $results = $sphinx->searchPeers($requestQuery,
                       <?php } ?>
                     </td>
                     <td colspan="5" class="text-right">
-                      <?php if (TRACKER_PUBLIC_PEERS) { ?>
+                      <?php if (API_PEERS) { ?>
                         <div class="margin-top-8"><?php echo _('trackers') ?></div>
-                        <?php foreach (TRACKER_PUBLIC_PEERS as $address) { ?>
-                          <div><?php echo $address ?></div>
+                        <?php foreach (API_PEERS as $tracker => $website) { ?>
+                          <div><?php echo $tracker ?></div>
                         <?php } ?>
                       <?php } ?>
                     </td>
@@ -249,10 +249,10 @@ $results = $sphinx->searchPeers($requestQuery,
                   <tr>
                     <td class="text-center">
                       <div class="margin-y-8"><?php echo _('not found') ?></div>
-                      <?php if (TRACKER_PUBLIC_PEERS) { ?>
+                      <?php if (API_PEERS) { ?>
                         <div class="margin-y-8"><?php echo _('get yourself tracked by connection') ?></div>
-                        <?php foreach (TRACKER_PUBLIC_PEERS as $address) { ?>
-                          <div class="margin-y-8"><?php echo $address ?></div>
+                        <?php foreach (API_PEERS as $tracker => $website) { ?>
+                          <div class="margin-y-8"><?php echo $tracker ?></div>
                         <?php } ?>
                       <?php } ?>
                     </td>

@@ -54,7 +54,12 @@ git checkout -b my-pr-branch-name
 
 #### Roadmap
 
- * [ ] Federated tracking API
+API
+ * [x] trackers
+ * [x] peers
+
+Crawler
+ * [ ] federated model
 
 #### Donate to contributors
 

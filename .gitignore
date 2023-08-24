@@ -6,5 +6,8 @@
 
 /src/config/app.php
 
+/src/public/api/peers.json
+/src/public/api/trackers.json
+
 .ftpignore
 composer.lock
