@@ -223,19 +223,27 @@ $results = $sphinx->searchPeers($requestQuery,
                     </tr>
                   <?php } ?>
                 </tbody>
-                <?php if ($total >= WEBSITE_PEER_REMOTE_PAGINATION_LIMIT) { ?>
-                  <tfoot>
-                    <tr>
-                      <td colspan="9" class="text-left">
+                <tfoot>
+                  <tr>
+                    <td colspan="4" class="text-left">
+                      <?php if ($total >= WEBSITE_PEER_REMOTE_PAGINATION_LIMIT) { ?>
                         <?php if ($requestPage > 1) { ?>
                           <a href="search.php?query=<?php echo urlencode($requestQuery) ?>&page=<?php echo $requestPage - 1 ?>"><?php echo _('&larr;') ?></a>
                         <?php } ?>
                         <?php echo sprintf(_('page %s'), $requestPage) ?>
                         <a href="search.php?query=<?php echo urlencode($requestQuery) ?>&page=<?php echo $requestPage + 1 ?>"><?php echo _('&rarr;') ?></a>
-                      </td>
-                    </tr>
-                  </tfoot>
-                <?php } ?>
+                      <?php } ?>
+                    </td>
+                    <td colspan="5" class="text-right">
+                      <?php if (TRACKER_PUBLIC_PEERS) { ?>
+                        <div class="margin-y-8"><?php echo _('get yourself tracked by connection') ?><div>
+                        <?php foreach (TRACKER_PUBLIC_PEERS as $address) { ?>
+                          <div><?php echo $address ?><div>
+                        <?php } ?>
+                      <?php } ?>
+                    </td>
+                  </tr>
+                </tfoot>
               <?php } else { ?>
                 <tfoot>
                   <tr>
