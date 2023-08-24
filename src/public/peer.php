@@ -191,9 +191,9 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
 <!DOCTYPE html>
 <html lang="en-US">
   <head>
-    <link rel="stylesheet" type="text/css" href="<?php echo WEBSITE_URL ?>/assets/theme/<?php echo $requestTheme ?>/css/common.css?<?php echo time() ?>" />
-    <link rel="stylesheet" type="text/css" href="<?php echo WEBSITE_URL ?>/assets/theme/<?php echo $requestTheme ?>/css/framework.css?<?php echo time() ?>" />
-    <link rel="stylesheet" type="text/css" href="<?php echo WEBSITE_URL ?>/assets/theme/<?php echo $requestTheme ?>/css/yggverse/graph/calendar/month.css?<?php echo time() ?>" />
+    <link rel="stylesheet" type="text/css" href="<?php echo WEBSITE_URL ?>/assets/theme/<?php echo $requestTheme ?>/css/common.css?<?php echo WEBSITE_CSS_VERSION ?>" />
+    <link rel="stylesheet" type="text/css" href="<?php echo WEBSITE_URL ?>/assets/theme/<?php echo $requestTheme ?>/css/framework.css?<?php echo WEBSITE_CSS_VERSION ?>" />
+    <link rel="stylesheet" type="text/css" href="<?php echo WEBSITE_URL ?>/assets/theme/<?php echo $requestTheme ?>/css/yggverse/graph/calendar/month.css?<?php echo WEBSITE_CSS_VERSION ?>" />
     <title>
       <?php if ($peerInfo) { ?>
         <?php echo sprintf(_('Peer %s - %s'), $peerInfo->address, WEBSITE_NAME) ?>
