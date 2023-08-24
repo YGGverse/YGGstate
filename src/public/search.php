@@ -239,7 +239,15 @@ $results = $sphinx->searchPeers($requestQuery,
               <?php } else { ?>
                 <tfoot>
                   <tr>
-                    <td class="text-center"><?php echo _('Results not found') ?></td>
+                    <td class="text-center">
+                      <div class="margin-y-8"><?php echo _('not found') ?><div>
+                      <?php if (TRACKER_PUBLIC_PEERS) { ?>
+                        <div class="margin-y-8"><?php echo _('get yourself tracked by connection') ?><div>
+                        <?php foreach (TRACKER_PUBLIC_PEERS as $address) { ?>
+                          <div class="margin-y-8"><?php echo $address ?><div>
+                        <?php } ?>
+                      <?php } ?>
+                    </td>
                   </tr>
                 </tfoot>
               <?php } ?>
