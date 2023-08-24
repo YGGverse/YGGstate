@@ -275,7 +275,7 @@ $peers = $memory->getByMethodCallback(
           </div>
           <div class="column width-50 width-tablet-100 width-mobile-100">
             <div class="padding-4">
-              <h2><?php echo _('Network totals') ?></h2>
+              <h2><?php echo _('Totals') ?></h2>
               <div class="row padding-0">
                 <div class="column width-50">
                   <table class="bordered width-100 margin-bottom-8">
