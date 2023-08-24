@@ -40,6 +40,7 @@ sphinxsearch
 * Install [GeoLite2 DB](https://www.maxmind.com) to `/src/storage` or provide alternative path in configuration file
 * Configuration examples presented at `/config` folder
 * Set up the `/src/crontab` by following [example](https://github.com/YGGverse/YGGstate/blob/main/%20example/environment%20/crontab)
+* Set up server as [yggdrasil public peer](https://github.com/yggdrasil-network/public-peers) to start remote connections tracking
 
 #### Contribute
 
