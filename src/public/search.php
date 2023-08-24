@@ -49,9 +49,10 @@ $requestPage  = !empty($_GET['page']) && $_GET['page'] > 1 ? (int) $_GET['page']
 // Redirect visitor to it peer page on empty search request
 if ($requestQuery == '*' && !empty($_SERVER['REMOTE_ADDR'])) {
 
-  if ($peer = $db->findPeer($_SERVER['REMOTE_ADDR'])) {
+  if (filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ||
+      filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
 
-    header(sprintf('Location: %s/peer.php?peerId=%s', WEBSITE_URL, $peer->peerId));
+    $requestQuery = $_SERVER['REMOTE_ADDR'];
   }
 }
 
