@@ -236,7 +236,7 @@ $results = $sphinx->searchPeers($requestQuery,
                     </td>
                     <td colspan="5" class="text-right">
                       <?php if (TRACKER_PUBLIC_PEERS) { ?>
-                        <div class="margin-y-8"><?php echo _('get yourself tracked by connection') ?></div>
+                        <div class="margin-top-8"><?php echo _('get yourself tracked by connection') ?></div>
                         <?php foreach (TRACKER_PUBLIC_PEERS as $address) { ?>
                           <div><?php echo $address ?></div>
                         <?php } ?>
