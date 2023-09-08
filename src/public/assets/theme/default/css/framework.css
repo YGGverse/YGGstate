@@ -130,12 +130,20 @@
 
 /* responsive rules */
 
+.width-13-px {
+  width: 13px;
+}
+
 .width-100 {
   width: 100%;
 }
 
 .width-50 {
   width: 50%;
+}
+
+.no-wrap {
+  white-space: nowrap;
 }
 
 @media (max-width: 1220px) {

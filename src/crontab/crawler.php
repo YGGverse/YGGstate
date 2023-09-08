@@ -134,29 +134,38 @@ try {
 @unlink(__DIR__ . '/../public/api/trackers.json');
 
 // Update peers
-if ($connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers()) {
-
-  if ($handle = fopen(__DIR__ . '/../public/api/peers.json', 'w+')) {
-                fwrite($handle, json_encode($connectedPeers));
-                fclose($handle);
-  }
-
-} else {
-
+if (!$connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers())
+{
   exit;
 }
 
-// Update trackers
-if (API_PEERS) {
+// Update peers
 
-  if ($handle = fopen(__DIR__ . '/../public/api/trackers.json', 'w+')) {
-                fwrite($handle, json_encode(API_PEERS));
-                fclose($handle);
+/// Remove remote addresses
+$jsonPeers = [];
+foreach ($connectedPeers as $connectedPeerAddress => $connectedPeerInfo)
+{
+  foreach ($connectedPeerInfo as $connectedPeerInfoKey => $connectedPeerInfoValue)
+  {
+    if (in_array($connectedPeerInfoKey, (array) API_PEER_FIELDS))
+    {
+      $jsonPeers[$connectedPeerAddress][$connectedPeerInfoKey] = $connectedPeerInfoValue;
+    }
   }
+}
 
-} else {
+/// Save dump
+if ($handle = fopen(__DIR__ . '/../public/api/peers.json', 'w+'))
+{
+              fwrite($handle, json_encode($jsonPeers));
+              fclose($handle);
+}
 
-  exit;
+// Update trackers
+if ($handle = fopen(__DIR__ . '/../public/api/trackers.json', 'w+'))
+{
+              fwrite($handle, json_encode(API_PEERS));
+              fclose($handle);
 }
 
 // @TODO merge peers data from remote trackers

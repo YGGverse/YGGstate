@@ -73,6 +73,18 @@ define('WEBSITE_PEER_REMOTE_PAGINATION_LIMIT', 20);
 define('WEBSITE_PEER_PORT_CHECK_TIMEOUT', 60 * 5);
 
 // API
+define('API_PEER_FIELDS', (array)
+  [
+    'bytes_recvd',
+    'bytes_sent',
+    'coords',
+    'key',
+    'port',
+    'uptime',
+    // ...
+  ]
+);
+
 define('API_PEERS', (object)
   [
     'tls://94.140.114.241:4708' => WEBSITE_URL,
