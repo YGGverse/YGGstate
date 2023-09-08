@@ -94,3 +94,11 @@ define('API_PEERS', (object)
 
 // Crawler
 define('CRAWL_STOP_DISK_QUOTA_MB_LEFT', 128);
+
+// Administration
+define('ADMIN_REMOTE_ADDRESS_WHITELIST', (array)
+  [
+    '127.0.0.1',
+    // ...
+  ]
+);
