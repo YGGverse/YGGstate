@@ -42,12 +42,12 @@ try {
 }
 
 // Filter request data
-$requestQuery = !empty($_GET['query']) ? trim(html_entity_decode(urldecode($_GET['query']))) : '*';
+$requestQuery = !empty($_GET['query']) ? trim(html_entity_decode(urldecode($_GET['query']))) : 'this';
 $requestTheme = !empty($_GET['theme']) && in_array(['default'], $_GET['theme']) ? $_GET['theme'] : 'default';
 $requestPage  = !empty($_GET['page']) && $_GET['page'] > 1 ? (int) $_GET['page'] : 1;
 
 // Redirect visitor to it peer page on empty search request
-if ($requestQuery == '*' && !empty($_SERVER['REMOTE_ADDR'])) {
+if ($requestQuery == 'this' && !empty($_SERVER['REMOTE_ADDR'])) {
 
   if (filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) ||
       filter_var($_SERVER['REMOTE_ADDR'], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {
@@ -85,7 +85,7 @@ $results = $sphinx->searchPeers($requestQuery,
         <div class="row">
           <a class="logo" href="<?php echo WEBSITE_URL ?>"><?php echo str_replace('YGG', '<span>YGG</span>', WEBSITE_NAME) ?></a>
           <form name="search" method="get" action="<?php echo WEBSITE_URL ?>/search.php">
-            <input type="text" name="query" value="<?php echo htmlentities($requestQuery) ?>" placeholder="<?php echo _('address, ip, geo, port, keyword...') ?>" />
+            <input type="text" name="query" value="<?php echo !empty($_SERVER['REMOTE_ADDR']) && $requestQuery == $_SERVER['REMOTE_ADDR'] ? 'this' : htmlentities($requestQuery) ?>" placeholder="<?php echo _('this, address, ip, geo, port, keyword...') ?>" />
             <button type="submit"><?php echo _('search') ?></button>
           </form>
         </div>
@@ -96,7 +96,7 @@ $results = $sphinx->searchPeers($requestQuery,
         <div class="row">
           <div class="column width-100">
             <div class="padding-4">
-              <h1><?php echo sprintf(_('Search matches for %s'), htmlentities($requestQuery)) ?></h1>
+              <h1><?php echo sprintf(_('Search matches for %s'), !empty($_SERVER['REMOTE_ADDR']) && $requestQuery == $_SERVER['REMOTE_ADDR'] ? _('this connection') : htmlentities($requestQuery)) ?></h1>
             </div>
           </div>
         </div>
