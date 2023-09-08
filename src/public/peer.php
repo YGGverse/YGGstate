@@ -253,7 +253,7 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
                             <?php echo _('Time') ?>
                           </a>
                         </th>
-                        <?php if (Access::address([$peerInfo->address])) { ?>
+                        <?php if (Access::address(array_merge([$peerInfo->address], ADMIN_REMOTE_ADDRESS_WHITELIST))) { ?>
                           <th class="text-left">
                             <?php echo _('Remote') ?>
                             <sub title="<?php echo _('Feature visible for this connection only') ?>">
@@ -281,7 +281,7 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
                       <?php foreach ($peerRemoteConnections as $i => $peerRemoteConnection) { ?>
                         <tr>
                           <td class="text-left no-wrap"><?php echo date('Y-m-d H:s:i', $peerRemoteConnection->timeAdded) ?></td>
-                          <?php if (Access::address([$peerInfo->address])) { ?>
+                          <?php if (Access::address(array_merge([$peerInfo->address], ADMIN_REMOTE_ADDRESS_WHITELIST))) { ?>
                             <td class="text-left">
                               <?php echo $peerRemoteConnection->remote ?>
                             </td>
@@ -304,7 +304,7 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
                     <?php if ($i >= WEBSITE_PEER_REMOTE_PAGINATION_LIMIT) { ?>
                     <tfoot>
                       <tr>
-                        <td colspan="6" class="text-left">
+                        <td colspan="<?php echo Access::address(array_merge([$peerInfo->address], ADMIN_REMOTE_ADDRESS_WHITELIST)) ? 6 : 5 ?>" class="text-left">
                           <?php if ($requestPage > 1) { ?>
                             <a href="<?php echo WEBSITE_URL ?>/peer.php?peerId=<?php echo $requestPeerId ?>&sort=<?php echo $requestSort ?>&page=<?php echo $requestPage - 1 ?>"><?php echo _('&larr;') ?></a>
                           <?php } ?>
