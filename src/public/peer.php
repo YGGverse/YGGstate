@@ -2,6 +2,7 @@
 
 // Load dependencies
 require_once (__DIR__ . '/../config/app.php');
+require_once (__DIR__ . '/../library/access.php');
 require_once (__DIR__ . '/../library/mysql.php');
 require_once (__DIR__ . '/../../vendor/autoload.php');
 
@@ -226,7 +227,7 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
               <div class="padding-4">
                 <h1>
                   <?php echo sprintf(_('Peer %s'), $peerInfo->address) ?>
-                  <?php if (!empty($_SERVER['REMOTE_ADDR']) && $peerInfo->address == $_SERVER['REMOTE_ADDR']) { ?>
+                  <?php if (Access::address([$peerInfo->address])) { ?>
                     <span class="label label-green font-size-12 font-width-normal cursor-default" title="<?php echo _('you have connected from this peer') ?>">
                       <?php echo _('this connection') ?>
                     </span>
@@ -248,7 +249,7 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
                             <?php echo _('Time') ?>
                           </a>
                         </th>
-                        <?php if (!empty($_SERVER['REMOTE_ADDR']) && $peerInfo->address == $_SERVER['REMOTE_ADDR']) { ?>
+                        <?php if (Access::address([$peerInfo->address])) { ?>
                           <th class="text-left">
                             <?php echo _('Remote') ?>
                             <sub title="<?php echo _('Feature visible for this connection only') ?>">
@@ -276,7 +277,7 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
                       <?php foreach ($peerRemoteConnections as $i => $peerRemoteConnection) { ?>
                         <tr>
                           <td class="text-left no-wrap"><?php echo date('Y-m-d H:s:i', $peerRemoteConnection->timeAdded) ?></td>
-                          <?php if (!empty($_SERVER['REMOTE_ADDR']) && $peerInfo->address == $_SERVER['REMOTE_ADDR']) { ?>
+                          <?php if (Access::address([$peerInfo->address])) { ?>
                             <td class="text-left">
                               <?php echo $peerRemoteConnection->remote ?>
                             </td>
