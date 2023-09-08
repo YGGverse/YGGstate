@@ -213,6 +213,9 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
       <div class="container">
         <div class="row">
           <a class="logo" href="<?php echo WEBSITE_URL ?>"><?php echo str_replace('YGG', '<span>YGG</span>', WEBSITE_NAME) ?></a>
+          <?php if (Access::address(ADMIN_REMOTE_ADDRESS_WHITELIST)) { ?>
+            <sup class="label label-green font-size-12 font-width-normal cursor-default"><?php echo _('admin') ?></sup>
+          <?php } ?>
           <form name="search" method="get" action="<?php echo WEBSITE_URL ?>/search.php">
             <input type="text" name="query" value="" placeholder="<?php echo _('this, address, ip, geo, port, keyword...') ?>" />
             <button type="submit"><?php echo _('search') ?></button>
