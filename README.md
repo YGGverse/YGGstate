@@ -83,7 +83,6 @@ Feel free to [share](https://github.com/YGGverse/YGGstate/issues) your ideas and
 
 #### See also
 
-* [YGGadmin -  Administration Webapp for Yggdrasil](https://github.com/YGGverse/YGGadmin)
 * [YGGo - YGGo! Distributed Web Search Engine](https://github.com/YGGverse/YGGo)
 * [YGGwave ~ The Radio Catalog](https://github.com/YGGverse/YGGwave)
 * [YGGtracker - BitTorrent Tracker and Catalog for Yggdrasil](https://github.com/YGGverse/YGGtracker)
