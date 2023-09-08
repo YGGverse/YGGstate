@@ -366,15 +366,15 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
                         </tr>
                         <tr>
                           <td class="text-left"><?php echo _('Remote') ?></td>
-                          <td class="text-right"><?php echo $peerInfo->remoteTotal ?></td>
+                          <td class="text-right"><?php echo number_format($peerInfo->remoteTotal) ?></td>
                         </tr>
                         <tr>
                           <td class="text-left"><?php echo _('Session') ?></td>
-                          <td class="text-right"><?php echo $peerInfo->sessionTotal ?></td>
+                          <td class="text-right"><?php echo number_format($peerInfo->sessionTotal) ?></td>
                         </tr>
                         <tr>
                           <td class="text-left"><?php echo _('Coordinate') ?></td>
-                          <td class="text-right"><?php echo $peerInfo->coordinateTotal ?></td>
+                          <td class="text-right"><?php echo number_format($peerInfo->coordinateTotal) ?></td>
                         </tr>
                       </tbody>
                     </table>
@@ -519,7 +519,7 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
             <br />
             <?php echo sprintf(_('database since %s contains %s peers'),
                                date('M, Y', $memory->getByMethodCallback($db, 'getPeerFirstByTimeAdded')->timeAdded),
-                               $memory->getByMethodCallback($db, 'getPeersTotal')) ?>
+                               number_format($memory->getByMethodCallback($db, 'getPeersTotal'))) ?>
           </div>
         </div>
       </div>

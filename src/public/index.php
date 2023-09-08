@@ -287,22 +287,22 @@ $peers = $memory->getByMethodCallback(
                     <tbody>
                       <tr>
                         <td class="text-left"><?php echo _('Online') ?></td>
-                        <td class="text-right"><?php echo $memory->getByMethodCallback($db, 'findPeerTotalByTimeUpdated', [time() - WEBSITE_PEER_REMOTE_TIME_ONLINE_TIMEOUT,
-                                                                                                                           strtotime('+1 month', strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), 1)))]) ?></td>
+                        <td class="text-right"><?php echo number_format($memory->getByMethodCallback($db, 'findPeerTotalByTimeUpdated', [time() - WEBSITE_PEER_REMOTE_TIME_ONLINE_TIMEOUT,
+                                                                                                                                         strtotime('+1 month', strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), 1)))])) ?></td>
                       </tr>
                       <tr>
                         <td class="text-left"><?php echo _('New') ?></td>
-                        <td class="text-right"><?php echo $memory->getByMethodCallback($db, 'findPeerTotalByTimeAdded', [strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), 1)),
-                                                                                                                         strtotime('+1 month', strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), 1)))]) ?></td>
+                        <td class="text-right"><?php echo number_format($memory->getByMethodCallback($db, 'findPeerTotalByTimeAdded', [strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), 1)),
+                                                                                                                                       strtotime('+1 month', strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), 1)))])) ?></td>
                       </tr>
                       <tr>
                         <td class="text-left"><?php echo _('Active') ?></td>
-                        <td class="text-right"><?php echo $memory->getByMethodCallback($db, 'findPeerTotalByTimeUpdated', [strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), 1)),
-                                                                                                                           strtotime('+1 month', strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), 1)))]) ?></td>
+                        <td class="text-right"><?php echo number_format($memory->getByMethodCallback($db, 'findPeerTotalByTimeUpdated', [strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), 1)),
+                                                                                                                                         strtotime('+1 month', strtotime(sprintf('%s-%s-%s 00:00', date('Y'), date('n'), 1)))])) ?></td>
                       </tr>
                       <tr>
                         <td class="text-left"><?php echo _('Total') ?></td>
-                        <td class="text-right"><?php echo $memory->getByMethodCallback($db, 'getPeersTotal') ?></td>
+                        <td class="text-right"><?php echo number_format($memory->getByMethodCallback($db, 'getPeersTotal')) ?></td>
                       </tr>
                     </tbody>
                   </table>
@@ -386,7 +386,7 @@ $peers = $memory->getByMethodCallback(
             <br />
             <?php echo sprintf(_('database since %s contains %s peers'),
                                date('M, Y', $memory->getByMethodCallback($db, 'getPeerFirstByTimeAdded')->timeAdded),
-                               $memory->getByMethodCallback($db, 'getPeersTotal')) ?>
+                               number_format($memory->getByMethodCallback($db, 'getPeersTotal'))) ?>
           </div>
         </div>
       </div>

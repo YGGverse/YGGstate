@@ -275,7 +275,7 @@ $results = $sphinx->searchPeers($requestQuery,
             <br />
             <?php echo sprintf(_('database since %s contains %s peers'),
                                date('M, Y', $memory->getByMethodCallback($db, 'getPeerFirstByTimeAdded')->timeAdded),
-                               $memory->getByMethodCallback($db, 'getPeersTotal')) ?>
+                               number_format($memory->getByMethodCallback($db, 'getPeersTotal'))) ?>
           </div>
         </div>
       </div>
