@@ -130,7 +130,8 @@ if ($requestPort) {
     // Check requests quota
     $lastPeerPortStatus = $db->findLastPeerPortStatusByPeerId($requestPeerId);
 
-    if ($lastPeerPortStatus &&
+    if (!Access::address(array_merge([$peerInfo->address], ADMIN_REMOTE_ADDRESS_WHITELIST)) &&
+        $lastPeerPortStatus &&
         $lastPeerPortStatus->timeAdded > time() - WEBSITE_PEER_PORT_CHECK_TIMEOUT) {
 
       $responsePort = (object)
