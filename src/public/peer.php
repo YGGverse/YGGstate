@@ -39,7 +39,7 @@ $requestSort     = isset($_GET['sort']) && in_array($_GET['sort'], ['peerConnect
 $requestOrder    = isset($_GET['order']) && in_array($_GET['order'], ['ASC', 'DESC']) ? $_GET['order'] : 'DESC';
 $requestPage     = isset($_GET['page']) && $_GET['page'] > 1 ? (int) $_GET['page'] : 1;
 $requestCalendar = isset($_GET['calendar']) && in_array($_GET['calendar'], ['traffic']) ? $_GET['calendar'] : 'traffic';
-$requestPort     = isset($_POST['port']) && 5 > strlen($_POST['port']) && $_POST['port'] > 0 ? (int) $_POST['port'] : false;
+$requestPort     = isset($_POST['port']) && 6 > strlen($_POST['port']) && $_POST['port'] > 0 ? (int) $_POST['port'] : false;
 
 // App controller begin
 $calendar = new Yggverse\Graph\Calendar\Month($requestTime);
