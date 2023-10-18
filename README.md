@@ -9,7 +9,7 @@ https://github.com/YGGverse/YGGstate/tree/main/media
 
 #### Online trackers
 
-* tls://94.140.114.241:4708
+* `tls://94.140.114.241:4708`
   * `http://[201:23b4:991a:634d:8359:4521:5576:15b7]/yggstate/`
 
 #### Requirements
