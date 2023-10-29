@@ -65,16 +65,6 @@ $debug = [
           ]
         ]
       ],
-      'coordinate' => [
-        'total' => [
-          'insert' => 0,
-        ],
-        'route' => [
-          'total' => [
-            'insert' => 0,
-          ]
-        ]
-      ],
       'connection' => [
         'total' => [
           'insert' => 0,
@@ -134,8 +124,14 @@ try {
 @unlink(__DIR__ . '/../public/api/trackers.json');
 
 // Update peers
-if (!$connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers())
+$connectedPeersDebug = [];
+
+if (false === $connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers($connectedPeersDebug))
 {
+  var_dump(
+    $connectedPeersDebug
+  );
+
   exit;
 }
 
@@ -143,13 +139,13 @@ if (!$connectedPeers = Yggverse\Yggdrasilctl\Yggdrasil::getPeers())
 
 /// Remove remote addresses
 $jsonPeers = [];
-foreach ($connectedPeers as $connectedPeerAddress => $connectedPeerInfo)
+foreach ($connectedPeers as $connectedPeerInfo)
 {
-  foreach ($connectedPeerInfo as $connectedPeerInfoKey => $connectedPeerInfoValue)
+  foreach ($connectedPeerInfo as $key => $value)
   {
-    if (in_array($connectedPeerInfoKey, (array) API_PEER_FIELDS))
+    if (in_array($key, (array) API_PEER_FIELDS))
     {
-      $jsonPeers[$connectedPeerAddress][$connectedPeerInfoKey] = $connectedPeerInfoValue;
+      $jsonPeers[$connectedPeerInfo->address][$key] = $value;
     }
   }
 }
@@ -171,20 +167,20 @@ if ($handle = fopen(__DIR__ . '/../public/api/trackers.json', 'w+'))
 // @TODO merge peers data from remote trackers
 
 // Collect connected peers
-foreach ($connectedPeers as $connectedPeerAddress => $connectedPeerInfo) {
+foreach ($connectedPeers as $connectedPeerInfo) {
 
   try {
 
     $db->beginTransaction();
 
     // Init peer
-    if ($dbPeer = $db->findPeer($connectedPeerAddress)) {
+    if ($dbPeer = $db->findPeer($connectedPeerInfo->address)) {
 
       $dbPeerId = $dbPeer->peerId;
 
     } else {
 
-      if ($dbPeerId = $db->addPeer($connectedPeerAddress, $connectedPeerInfo->key, time())) {
+      if ($dbPeerId = $db->addPeer($connectedPeerInfo->address, $connectedPeerInfo->key, time())) {
 
         $debug['yggdrasil']['peer']['total']['insert']++;
       }
@@ -226,51 +222,6 @@ foreach ($connectedPeers as $connectedPeerAddress => $connectedPeerInfo) {
                                                 time())) {
 
         $debug['yggdrasil']['peer']['session']['total']['insert']++;
-      }
-    }
-
-    // Init peer coordinate
-    if ($dbPeerCoordinate = $db->findLastPeerCoordinateByPeerId($dbPeerId)) {
-
-      $dbPeerCoordinateId = $dbPeerCoordinate->peerCoordinateId;
-
-      // Peer have changed it port, init new coordinate
-      if ($dbPeerCoordinate->port != $connectedPeerInfo->port) {
-
-        if ($dbPeerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time())) {
-
-          $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
-        }
-      }
-
-    } else {
-
-      if ($dbPeerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time())) {
-
-        $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
-      }
-    }
-
-    // Init peer coordinate route
-    $dbCoords = [];
-    foreach ($db->findPeerCoordinateRouteByCoordinateId($dbPeerCoordinateId) as $dbPeerCoordinateRoute) {
-      $dbCoords[$dbPeerCoordinateRoute->level] = $dbPeerCoordinateRoute->port;
-    }
-
-    // Compare remote / local route, create new on changed
-    if ($dbCoords !== $connectedPeerInfo->coords) {
-
-      if ($dbPeerCoordinateId = $db->addPeerCoordinate($dbPeerId, $connectedPeerInfo->port, time())) {
-
-        $debug['yggdrasil']['peer']['coordinate']['total']['insert']++;
-      }
-
-      foreach ($connectedPeerInfo->coords as $level => $port) {
-
-        if ($db->addPeerCoordinateRoute($dbPeerCoordinateId, $level, $port)) {
-
-          $debug['yggdrasil']['peer']['coordinate']['route']['total']['insert']++;
-        }
       }
     }
 
@@ -375,7 +326,7 @@ foreach ($connectedPeers as $connectedPeerAddress => $connectedPeerInfo) {
         } else {
 
           if ($dbGeoCoordinateId = $db->addGeoCoordinate($geoIp2City->city($connectedPeerRemoteUrl->host->name)->location->latitude,
-                                                        $geoIp2City->city($connectedPeerRemoteUrl->host->name)->location->longitude)) {
+                                                         $geoIp2City->city($connectedPeerRemoteUrl->host->name)->location->longitude)) {
 
             $debug['yggdrasil']['geo']['coordinate']['total']['insert']++;
           }
@@ -428,9 +379,9 @@ foreach ($connectedPeers as $connectedPeerAddress => $connectedPeerInfo) {
     }
 
     // Init peer connection
-    if (!$db->findPeerConnection($dbPeerSessionId, $dbPeerRemoteId, $dbPeerCoordinateId)) {
+    if (!$db->findPeerConnection($dbPeerSessionId, $dbPeerRemoteId)) {
 
-      if ($db->addPeerConnection($dbPeerSessionId, $dbPeerRemoteId, $dbPeerCoordinateId, time())) {
+      if ($db->addPeerConnection($dbPeerSessionId, $dbPeerRemoteId, time())) {
 
         $debug['yggdrasil']['peer']['connection']['total']['insert']++;
       }

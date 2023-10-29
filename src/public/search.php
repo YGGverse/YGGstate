@@ -89,7 +89,7 @@ $results = $sphinx->searchPeers($requestQuery,
             <sup class="label label-green font-size-12 font-width-normal cursor-default"><?php echo _('admin') ?></sup>
           <?php } ?>
           <form name="search" method="get" action="<?php echo WEBSITE_URL ?>/search.php">
-            <input type="text" name="query" value="<?php echo !empty($_SERVER['REMOTE_ADDR']) && $requestQuery == $_SERVER['REMOTE_ADDR'] ? 'this' : htmlentities($requestQuery) ?>" placeholder="<?php echo _('this, address, ip, geo, port, keyword...') ?>" />
+            <input type="text" name="query" value="<?php echo !empty($_SERVER['REMOTE_ADDR']) && $requestQuery == $_SERVER['REMOTE_ADDR'] ? 'this' : htmlentities($requestQuery) ?>" placeholder="<?php echo _('this, address, ip, geo, keyword...') ?>" />
             <button type="submit"><?php echo _('search') ?></button>
           </form>
         </div>
@@ -112,8 +112,6 @@ $results = $sphinx->searchPeers($requestQuery,
                   <tr>
                     <th class="text-left"><?php echo _('Address') ?></th>
                     <th class="text-center"><?php echo _('Key') ?></th>
-                    <th class="text-center"><?php echo _('Coordinate port') ?></th>
-                    <th class="text-center"><?php echo _('Coordinate route') ?></th>
                     <th class="text-center"><?php echo _('Remote scheme') ?></th>
                     <th class="text-center"><?php echo _('Remote host') ?></th>
                     <th class="text-center"><?php echo _('Remote port') ?></th>
@@ -138,28 +136,6 @@ $results = $sphinx->searchPeers($requestQuery,
                           <span title="<?php echo $result->peerkey ?>" class="font-size-22 cursor-default text-color-green">
                             &bull;
                           </span>
-                        <?php } ?>
-                      </td>
-                      <td class="text-center">
-                        <?php if (false === strpos($result->peercoordinateport, $requestQuery)) { ?>
-                            <span title="<?php echo $result->peercoordinateport ?>" class="font-size-22 cursor-default text-color-red">
-                              &bull;
-                            </span>
-                          <?php } else { ?>
-                            <span title="<?php echo $result->peercoordinateport ?>" class="font-size-22 cursor-default text-color-green">
-                              &bull;
-                            </span>
-                        <?php } ?>
-                      </td>
-                      <td class="text-center">
-                        <?php if (false === strpos($result->peercoordinateroute, $requestQuery)) { ?>
-                            <span title="<?php echo $result->peercoordinateroute ?>" class="font-size-22 cursor-default text-color-red">
-                              &bull;
-                            </span>
-                          <?php } else { ?>
-                            <span title="<?php echo $result->peercoordinateroute ?>" class="font-size-22 cursor-default text-color-green">
-                              &bull;
-                            </span>
                         <?php } ?>
                       </td>
                       <td class="text-center">
@@ -229,7 +205,7 @@ $results = $sphinx->searchPeers($requestQuery,
                 </tbody>
                 <tfoot>
                   <tr>
-                    <td colspan="4" class="text-left">
+                    <td colspan="6" class="text-left">
                       <?php if ($total >= WEBSITE_PEER_REMOTE_PAGINATION_LIMIT) { ?>
                         <?php if ($requestPage > 1) { ?>
                           <a href="search.php?query=<?php echo urlencode($requestQuery) ?>&page=<?php echo $requestPage - 1 ?>"><?php echo _('&larr;') ?></a>
@@ -238,7 +214,7 @@ $results = $sphinx->searchPeers($requestQuery,
                         <a href="search.php?query=<?php echo urlencode($requestQuery) ?>&page=<?php echo $requestPage + 1 ?>"><?php echo _('&rarr;') ?></a>
                       <?php } ?>
                     </td>
-                    <td colspan="5" class="text-right">
+                    <td colspan="7" class="text-right">
                       <?php if (API_PEERS) { ?>
                         <div class="margin-top-8"><?php echo _('trackers') ?></div>
                         <?php foreach (API_PEERS as $tracker => $website) { ?>

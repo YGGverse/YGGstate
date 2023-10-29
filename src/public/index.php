@@ -186,7 +186,7 @@ $peers = $memory->getByMethodCallback(
             <sup class="label label-green font-size-12 font-width-normal cursor-default"><?php echo _('admin') ?></sup>
           <?php } ?>
           <form name="search" method="get" action="<?php echo WEBSITE_URL ?>/search.php">
-            <input type="text" name="query" value="" placeholder="<?php echo _('this, address, ip, geo, port, keyword...') ?>" />
+            <input type="text" name="query" value="" placeholder="<?php echo _('this, address, ip, geo, keyword...') ?>" />
             <button type="submit"><?php echo _('search') ?></button>
           </form>
         </div>

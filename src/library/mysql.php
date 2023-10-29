@@ -457,82 +457,30 @@ class MySQL {
   }
 
   // Peer connection
-  public function addPeerConnection(int $peerSessionId, int $peerRemoteId, int $peerCoordinateId, int $timeAdded) {
+  public function addPeerConnection(int $peerSessionId, int $peerRemoteId, int $timeAdded) {
 
     $this->_debug->query->insert->total++;
 
     $query = $this->_db->prepare('INSERT INTO `peerConnection` SET  `peerSessionId`    = ?,
                                                                     `peerRemoteId`     = ?,
-                                                                    `peerCoordinateId` = ?,
                                                                     `timeAdded`        = ?');
 
-    $query->execute([$peerSessionId, $peerRemoteId, $peerCoordinateId, $timeAdded]);
+    $query->execute([$peerSessionId, $peerRemoteId, $timeAdded]);
 
     return $this->_db->lastInsertId();
   }
 
-  public function findPeerConnection(int $peerSessionId, int $peerRemoteId, int $peerCoordinateId) {
+  public function findPeerConnection(int $peerSessionId, int $peerRemoteId) {
 
     $this->_debug->query->select->total++;
 
     $query = $this->_db->prepare('SELECT * FROM  `peerConnection`
-                                           WHERE `peerSessionId` = ? AND `peerRemoteId` = ? AND `peerCoordinateId` = ?
+                                           WHERE `peerSessionId` = ? AND `peerRemoteId` = ?
                                            LIMIT 1');
 
-    $query->execute([$peerSessionId, $peerRemoteId, $peerCoordinateId]);
+    $query->execute([$peerSessionId, $peerRemoteId]);
 
     return $query->fetch();
-  }
-
-  // Peer coordinate
-  // https://github.com/matrix-org/pinecone/wiki/2.-Spanning-Tree#coordinates
-
-  public function addPeerCoordinate(int $peerId, int $port, int $timeAdded) {
-
-    $this->_debug->query->insert->total++;
-
-    $query = $this->_db->prepare('INSERT INTO `peerCoordinate` SET `peerId`      = ?,
-                                                                   `port`        = ?,
-                                                                   `timeAdded`   = ?');
-
-    $query->execute([$peerId, $port, $timeAdded]);
-
-    return $this->_db->lastInsertId();
-  }
-
-  public function addPeerCoordinateRoute(int $peerCoordinateId, int $level, int $port) {
-
-    $this->_debug->query->insert->total++;
-
-    $query = $this->_db->prepare('INSERT INTO `peerCoordinateRoute` SET `peerCoordinateId` = ?,
-                                                                        `level`            = ?,
-                                                                        `port`             = ?');
-
-    $query->execute([$peerCoordinateId, $level, $port]);
-
-    return $this->_db->lastInsertId();
-  }
-
-  public function findLastPeerCoordinateByPeerId(int $peerId) {
-
-    $this->_debug->query->select->total++;
-
-    $query = $this->_db->prepare('SELECT * FROM `peerCoordinate` WHERE `peerId` = ? ORDER BY `peerCoordinateId` DESC LIMIT 1');
-
-    $query->execute([$peerId]);
-
-    return $query->fetch();
-  }
-
-  public function findPeerCoordinateRouteByCoordinateId(int $peerCoordinateId) {
-
-    $this->_debug->query->select->total++;
-
-    $query = $this->_db->prepare('SELECT * FROM `peerCoordinateRoute` WHERE `peerCoordinateId` = ? ORDER BY `level` ASC');
-
-    $query->execute([$peerCoordinateId]);
-
-    return $query->fetchAll();
   }
 
   // Analytics
@@ -703,15 +651,6 @@ class MySQL {
     `peerRemoteHost`.`name` AS `remoteHost`,
     `peerRemotePort`.`name` AS `remotePort`,
 
-    `peerCoordinate`.`port` AS `connectionPort`,
-
-    (
-      SELECT GROUP_CONCAT(`port` SEPARATOR ' &rarr; ')
-      FROM `peerCoordinateRoute`
-      WHERE `peerCoordinateRoute`.`peerCoordinateId` = `peerConnection`.`peerCoordinateId`
-      ORDER BY `peerCoordinateRoute`.`level` ASC
-    ) AS `route`,
-
     CONCAT
     (
       IF  (`peerRemotePort`.`name` IS NOT NULL,
@@ -728,7 +667,6 @@ class MySQL {
 
     JOIN `peerSession` ON (`peerSession`.`peerSessionId` = `peerConnection`.`peerSessionId`)
     JOIN `peerRemote` ON (`peerRemote`.`peerRemoteId` = `peerConnection`.`peerRemoteId`)
-    JOIN `peerCoordinate` ON (`peerCoordinate`.`peerCoordinateId` = `peerConnection`.`peerCoordinateId`)
 
     JOIN `peerRemoteScheme` ON (`peerRemoteScheme`.`peerRemoteSchemeId` = `peerRemote`.`peerRemoteSchemeId`)
     JOIN `peerRemoteHost` ON (`peerRemoteHost`.`peerRemoteHostId` = `peerRemote`.`peerRemoteHostId`)
@@ -774,8 +712,7 @@ class MySQL {
     ROUND(AVG(`peerSession`.`uptime`)) AS `uptimeAvg`,
 
    (SELECT COUNT(*) FROM `peerSession` WHERE `peerSession`.`peerId` = `peer`.`peerId`) AS `sessionTotal`,
-   (SELECT COUNT(*) FROM `peerRemote` WHERE `peerRemote`.`peerId` = `peer`.`peerId`) AS `remoteTotal`,
-   (SELECT COUNT(*) FROM `peerCoordinate` WHERE `peerCoordinate`.`peerId` = `peer`.`peerId`) AS `coordinateTotal`
+   (SELECT COUNT(*) FROM `peerRemote` WHERE `peerRemote`.`peerId` = `peer`.`peerId`) AS `remoteTotal`
 
     FROM `peer`
     JOIN `peerSession` ON (`peerSession`.`peerId` = `peer`.`peerId`)
@@ -795,8 +732,19 @@ class MySQL {
   public function optimize() {
 
     $this->_db->query('OPTIMIZE TABLE `peer`');
+
+    $this->_db->query('OPTIMIZE TABLE `peerSession`');
+
+    $this->_db->query('OPTIMIZE TABLE `peerConnection`');
+
     $this->_db->query('OPTIMIZE TABLE `peerRemote`');
-    $this->_db->query('OPTIMIZE TABLE `peerCoordinate`');
-    $this->_db->query('OPTIMIZE TABLE `peerCoordinateRoute`');
+    $this->_db->query('OPTIMIZE TABLE `peerRemoteScheme`');
+    $this->_db->query('OPTIMIZE TABLE `peerRemoteHost`');
+    $this->_db->query('OPTIMIZE TABLE `peerRemotePort`');
+
+    $this->_db->query('OPTIMIZE TABLE `geo`');
+    $this->_db->query('OPTIMIZE TABLE `geoCountry`');
+    $this->_db->query('OPTIMIZE TABLE `geoCity`');
+    $this->_db->query('OPTIMIZE TABLE `geoCoordinate`');
   }
 }

@@ -217,7 +217,7 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
             <sup class="label label-green font-size-12 font-width-normal cursor-default"><?php echo _('admin') ?></sup>
           <?php } ?>
           <form name="search" method="get" action="<?php echo WEBSITE_URL ?>/search.php">
-            <input type="text" name="query" value="" placeholder="<?php echo _('this, address, ip, geo, port, keyword...') ?>" />
+            <input type="text" name="query" value="" placeholder="<?php echo _('this, address, ip, geo, keyword...') ?>" />
             <button type="submit"><?php echo _('search') ?></button>
           </form>
         </div>
@@ -264,12 +264,6 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
                           </th>
                         <?php } ?>
                         <th class="text-center">
-                          <?php echo _('Port') ?>
-                        </th>
-                        <th class="text-left">
-                          <?php echo _('Coordinate') ?>
-                        </th>
-                        <th class="text-center">
                           <?php echo _('Geo') ?>
                         </th>
                         <th class="text-center">
@@ -286,8 +280,6 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
                               <?php echo $peerRemoteConnection->remote ?>
                             </td>
                           <?php } ?>
-                          <td class="text-center"><?php echo $peerRemoteConnection->connectionPort ?></td>
-                          <td class="text-left"><?php echo $peerRemoteConnection->route ?></td>
                           <td class="text-center">
                             <span class="cursor-default" title="<?php echo $peerRemoteConnection->geoCityName ?> <?php echo $peerRemoteConnection->geoCountryName ?>">
                               <?php echo $peerRemoteConnection->geoCountryIsoCode ?>
@@ -376,10 +368,6 @@ $peerPortStatuses = $db->findLastPeerPortStatusesByPeerId($requestPeerId);
                         <tr>
                           <td class="text-left"><?php echo _('Session') ?></td>
                           <td class="text-right"><?php echo number_format($peerInfo->sessionTotal) ?></td>
-                        </tr>
-                        <tr>
-                          <td class="text-left"><?php echo _('Coordinate') ?></td>
-                          <td class="text-right"><?php echo number_format($peerInfo->coordinateTotal) ?></td>
                         </tr>
                       </tbody>
                     </table>
